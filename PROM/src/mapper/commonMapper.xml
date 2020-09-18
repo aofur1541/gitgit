@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.mapper.commonMapper">
+
+<select id="getOneVMInfo" resultType="vmDataInfo">
+
+SELECT IFNULL(t.name,'') AS name, IFNULL(s.vm_service_name,'') AS servicename,d.*, IFNULL(t.id,0) AS tenants_id, IFNULL(s.vm_service_ID,0) AS service_id,h.vm_HID AS hostId
+FROM vm_data_info AS d
+LEFT JOIN vm_service AS s ON d.vm_service_ID = s.vm_service_ID
+LEFT JOIN tenants AS t ON s.tenants_id = t.id
+LEFT JOIN vm_host_info AS h ON h.vm_Hhostname = d.vm_host
+WHERE d.vm_ID = #{vm_ID}
+ORDER BY d.vm_status DESC
+
+</select>
+
+<select id="getNetworksInHost" resultType="HostNetwork">
+SELECT * FROM hostNetwork WHERE hostID = #{hostId};
+</select>
+
+<select id="getDataStoresInHost" resultType="HostDataStore">
+SELECT d.*,s.st_Allca,s.st_Useca,s.st_space
+FROM hostDataStore AS d
+JOIN vm_storage AS s ON s.st_ID = d.dataStoreID
+WHERE d.hostID = #{hostId}
+ORDER BY st_Allca-st_Useca DESC;
+</select>
+
+<select id="getHostInfo" resultType="hostInfo">
+SELECT h.*,c.clusterID AS clusterId FROM vm_host_info AS h
+JOIN clusterInfo AS c ON c.clusterName = h.hostParent
+<if test="hostName != null">
+WHERE h.vm_Hhostname = #{hostName}
+</if>
+</select>
+
+<select id="getHostInCluster" resultType="hostInfo">
+SELECT h.*
+FROM vm_host_info AS h
+JOIN clusterInfo AS c ON c.clusterName = h.hostParent
+WHERE c.clusterID = #{clusterID}
+</select>
+
+</mapper>

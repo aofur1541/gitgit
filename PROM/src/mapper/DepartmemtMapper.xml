@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.user.dao.DepartmentDAO">
+
+	<select id="selectDepartmentList" parameterType="DepartmentVO" resultType="DepartmentVO">
+		select 
+			dept1.id,
+			dept1.company_id as companyId,
+			c.name as companyName,
+			dept1.dept_id as deptId,
+			dept1.name,
+			dept1.upperdept_id as upperdeptId,
+			IFNULL(dept2.name,'최상위 부서') as upperdeptName,
+			dept1.isUse,
+			dept1.description,
+			dept1.created_on as createdOn,
+			dept1.updated_on as updatedOn
+		from department dept1
+			join company c on dept1.company_id = c.id
+			left join department dept2
+				on dept1.upperdept_id = dept2.dept_id and dept1.company_id = dept2.company_id
+		<where>
+			<if test="id != null">
+			and dept1.id = #{id}
+			</if>
+			<if test="companyId != null">
+			and dept1.company_id = #{companyId}
+			</if>
+			<if test="deptId != null">
+			and dept1.dept_id = #{deptId}
+			</if>
+			<if test="name != null">
+			and dept1.name = #{name}
+			</if>
+			<if test="isUse != null">
+			and dept1.isUse = #{isUse}
+			</if>
+			<if test="upperdeptId != null">
+			and dept1.upperdept_id > #{upperdeptId}
+			</if>
+		</where>
+		order by dept1.company_id desc, dept1.dept_id 
+	</select>
+	
+	<select id="selectDepartment" parameterType="DepartmentVO" resultType="DepartmentVO">
+		select 
+			dept1.id,
+			dept1.company_id as companyId,
+			c.name as companyName,
+			dept1.dept_id as deptId,
+			dept1.name,
+			dept1.upperdept_id as upperdeptId,
+			IFNULL(dept2.name,'최상위 부서') as upperdeptName,
+			dept1.isUse,
+			dept1.description,
+			dept1.created_on as createdOn,
+			dept1.updated_on as updatedOn
+		from department dept1
+			join company c on dept1.company_id = c.id
+			left join department dept2
+				on dept1.upperdept_id = dept2.dept_id and dept1.company_id = dept2.company_id
+		where dept1.id = #{id}	
+			and dept1.company_id = #{companyId}	
+			and dept1.dept_id = #{deptId}	
+		group by dept1.company_id, dept1.dept_id
+	</select>
+	
+	<select id="selectDeptHierarchyList" parameterType="DepartmentVO" resultType="DepartmentVO">
+		with recursive cte as
+		(
+			select 
+				id,
+				company_id as companyId,
+				dept_id as deptId,
+				name,
+				upperdept_id as upperdeptId,
+				isUse,
+				description
+			from department
+			where company_id = #{companyId} 
+			and dept_id = #{deptId}
+			
+			union all
+			
+			select
+				r.id,
+				r.company_id as companyId,
+				r.dept_id as deptId,
+				r.name,
+				r.upperdept_id as upperdeptId,
+				r.isUse,
+				r.description
+			from department r
+			inner join cte on r.upperdept_id = cte.deptId
+			where r.company_id = #{companyId} 
+		)
+		select cte.* from cte
+	</select>
+	
+	<select id="selectDeptUpperHierarchyList" parameterType="DepartmentVO" resultType="DepartmentVO">
+		with recursive cte as
+		(
+			select 
+				id,
+				company_id as companyId,
+				dept_id as deptId,
+				name,
+				upperdept_id as upperdeptId,
+				isUse,
+				description
+			from department
+			where company_id = #{companyId} 
+			and dept_id = #{deptId}
+			
+			union all
+			
+			select
+				r.id,
+				r.company_id as companyId,
+				r.dept_id as deptId,
+				r.name,
+				r.upperdept_id as upperdeptId,
+				r.isUse,
+				r.description
+			from department r
+			inner join cte on r.dept_id = cte.upperdeptId
+			where r.company_id = #{companyId} 
+		)
+		select cte.* from cte 
+		order by field(deptId, #{deptId}) desc;
+	</select>
+	
+	<select id="countSubDepartment" parameterType="DepartmentVO" resultType="int">
+		select count(*) 
+		from department
+		where company_id = #{companyId}	
+		and upperdept_id = #{upperdeptId}
+	</select>
+
+	<select id="countTenantsByDeptId" parameterType="DepartmentVO" resultType="int">
+		select count(*) 
+		from tenants
+		where company_id = #{companyId}	
+		and dept_id = #{deptId}
+	</select>
+
+	<insert id="insertDepartment" parameterType="DepartmentVO">
+		insert into department (
+			company_id,
+			dept_id,
+			name,
+			upperdept_id,
+			isUse,
+			description,
+			created_on,
+			updated_on)
+		values(
+			#{companyId},
+			#{deptId},
+			#{name},
+			#{upperdeptId},
+			#{isUse},
+			#{description},
+			now(),
+			now())
+	</insert>
+	
+	<update id="updateDepartment" parameterType="DepartmentVO">
+		update 
+			department 
+		set 
+			name = #{name},
+			isUse = #{isUse},
+			description = #{description},
+			updated_on = now() 
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteDepartment" parameterType="DepartmentVO">
+		delete from department 
+		where id = #{id}
+		and company_id = #{companyId}
+		and dept_id = #{deptId}
+	</delete>
+
+</mapper>

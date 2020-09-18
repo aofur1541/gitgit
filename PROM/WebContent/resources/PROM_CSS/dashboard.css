@@ -1,0 +1,337 @@
+@charset "utf-8";
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 기본 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+body {
+	overflow-x: hidden;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 캐러셀
+ *
+ * ---------------------------------------------------------------------------- */
+
+.carousel-indicators li {
+	margin: 0 7px;
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # dashWidget-type-1
+ *
+ * ---------------------------------------------------------------------------- */
+.dashWidget-type-1 {
+	padding: 0.9375rem;
+	text-align: center;
+	height: 5.313rem;
+}
+
+.dashWidget-type-1 span:last-child {
+	font-size: 1.875rem;
+	line-height: 1;
+	padding-top: 0.3125rem;
+}
+
+.dashWidget-type-1 span {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # dashWidget-type-2
+ *
+ * ---------------------------------------------------------------------------- */
+
+.dashWidget-type-2 .card-header {
+	padding: 0.9375rem !important;
+	border-bottom: 2px solid #1d2026 !important;
+}
+
+.dashWidget-type-2 .card-header h5>span {
+	font-size: 0.8125rem;
+	margin-left: 0.9375rem;
+	color: #999;
+}
+
+.dashWidget-type-2 .card-body {
+	padding: 0.9375rem !important;
+	text-align: center;
+	height: 5.25rem;
+	line-height: 1.8;
+}
+
+.dashWidget-type-2 .card-header h5.card-title,
+.dashWidget-type-2 .card-body div[class*=col-],
+.dashWidget-type-2 .card-body h3,
+.dashWidget-type-2 .card-body h1 {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # dashWidget-type-3
+ *
+ * ---------------------------------------------------------------------------- */
+
+.dashWidget-type-3 .card-body {
+	height: 5.25rem;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # dashWidget-type-4 
+ *
+ * TOP 5 테이블
+ *
+ * ---------------------------------------------------------------------------- */
+
+.dashWidget-type-4 .card-header {
+	padding: 0.9375rem !important;
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 2px solid #17191e !important;
+	align-items: center;
+}
+
+.dashWidget-type-4 .card-header h6>span {
+	font-size: 0.8125rem;
+	margin-left: 0.9375rem;
+	color: #999;
+}
+
+.dashWidget-type-4 .card-header h6.card-title {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+/* dashWidget-type-4-1 */
+/* vCPU 강조선 */
+.dashWidget-type-4-1 table.promTable thead th:nth-child(2) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-1 table.promTable tbody td:nth-child(2) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-1 table.promTable tbody tr:last-child td:nth-child(2) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* dashWidget-type-4-2 */
+/* Memory 강조선 */
+.dashWidget-type-4-2 table.promTable thead th:nth-child(3) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-2 table.promTable tbody td:nth-child(3) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-2 table.promTable tbody tr:last-child td:nth-child(3) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* dashWidget-type-4-3 */
+/* Disk 강조선 */
+.dashWidget-type-4-3 table.promTable thead th:nth-child(4) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-3 table.promTable tbody td:nth-child(4) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-3 table.promTable tbody tr:last-child td:nth-child(4) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* dashWidget-type-4-4 */
+/* Network 강조선 */
+.dashWidget-type-4-4 table.promTable thead th:nth-child(5) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-4 table.promTable tbody td:nth-child(5) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.dashWidget-type-4-4 table.promTable tbody tr:last-child td:nth-child(5) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # dashWidget-type-5
+ *
+ * ---------------------------------------------------------------------------- */
+
+.dashWidget-type-5 h6 {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 대시보드 차트
+ *
+ * ---------------------------------------------------------------------------- */
+
+.clusterWidget-chart-body-1 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 10.5rem;
+}
+
+.clusterWidget-chart-body-2 {
+	padding: 0.9375rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 9.5rem;
+}
+
+canvas {
+	position: relative;
+	z-index: 1;
+}
+
+.clusterWidget-chart-empty {
+	display: none;
+}
+
+.clusterWidget-chart-title {
+	position: absolute;
+	z-index: 0;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # mainboard.jsp CSS
+ *
+ * ---------------------------------------------------------------------------- */
+
+.card-logbody {
+	width: 100%;
+	height: 200px;
+}
+
+.article-list {
+	list-style: none;
+	padding-left: 0px;
+}
+
+.article-list li {
+	padding: 0.7em;
+	width: 100%;
+}
+
+.article-list li:hover {
+	background-color: #3E495F;
+}
+
+.article-list li p {
+	position: relative;
+	display: block;
+	padding-right: 150px;
+}
+
+.title-log {
+	display: block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.log-date {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.chart-body {
+	height: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cloud-chart-body {
+	height: 180px;
+}
+
+
+.doughnut-title {
+	position: absolute;
+	z-index: 0;
+	color: darkgray;
+	font-size: 1.3rem;
+}
+
+canvas {
+	position: relative;
+	z-index: 1;
+}
+
+.unit-text {
+	font-size: .5rem;
+	color: gray;
+}
+
+.status-table {
+	width: 100%;
+}
+
+.status-table td {
+	padding: 0.7em;
+	vertical-align: middle;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.status-table tr {
+	display: inline-table;
+	width: 100%;
+	table-layout: fixed;
+}
+
+.status-table tbody tr {
+	transition: 0.2s;
+}
+
+.status-table tbody tr:hover {
+	background-color: #3E495F;
+	transition: 0.2s;
+}

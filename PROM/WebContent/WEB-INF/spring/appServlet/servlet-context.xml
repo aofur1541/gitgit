@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans
+	xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<task:annotation-driven />
+
+	<context:annotation-config />
+	<annotation-driven />
+
+	<!-- Interceptor 설정 -->
+	<beans:bean id="AuthenticationInterceptor"
+		class="com.kdis.PROM.infra.interceptor.AuthenticationInterceptor" />
+
+	<interceptors>
+		<interceptor>
+			<mapping path="/**" />
+			<exclude-mapping path="/common/alert.do" />
+			<exclude-mapping path="/user/selectUserBySUserID.do" />
+			<exclude-mapping path="/tenant/selectTenantListbyUser.do" />
+			<exclude-mapping path="/user/verifyPassword.do" />
+			<exclude-mapping path="/user/upateNewPassword.do" />
+			<exclude-mapping path="/approval/applyPasswordReset.do" />
+			<exclude-mapping path="/login/**" />
+			<exclude-mapping path="/resources/**" />
+			<exclude-mapping path="/resource/**" />
+			<beans:ref bean="AuthenticationInterceptor" />
+		</interceptor>
+	</interceptors>
+
+	<cors>
+		<mapping path="/**" />
+	</cors>
+
+	<beans:bean
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+	<resources mapping="/resources/**" location="/resources/" />
+	<resources mapping="/resource/**"  location="/resource/"/>
+	<resources location="/WEB-INF/lib/, classpath=/WEB-INF/lib/"
+		mapping="/lib/**" />
+	<resources mapping="/favicon.ico" location="/favicon.ico" />
+
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+	<context:component-scan
+		base-package="com.kdis.PROM" />
+		
+</beans:beans>
+

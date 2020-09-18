@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.mapper.menuMapper">
+
+<!-- user UI Query -->
+
+<select id="getUserMeteringService" resultType="monitoringJoin">
+SELECT vm_service.vm_service_ID,vm_service.vm_service_name,SUM(vm_data_info.vm_cpu) as vm_cpu, SUM(vm_data_info.vm_memory) as vm_memory
+FROM vm_service
+JOIN vm_data_info ON vm_service.vm_service_ID = vm_data_info.vm_service_ID
+JOIN tenants ON vm_service.tenants_id = tenants.id where vm_service.tenants_id = #{id}
+GROUP BY vm_service.vm_service_ID 
+</select>
+
+<select id="getTenantVM" resultType="hashmap">
+SELECT COUNT(CASE WHEN vm_status='poweredOn' THEN 1 END) AS powerOn, COUNT(CASE WHEN vm_status='poweredOff' THEN 1 END) AS powerOff,sum(vm_cpu) as cpu,sum(vm_memory) as memory,sum(vm_disk) as disk
+FROM vm_data_info
+JOIN vm_service ON vm_data_info.vm_service_ID = vm_service.vm_service_ID
+JOIN tenants on vm_service.tenants_id = tenants.id where tenants.id = #{id};
+</select>
+
+<select id="getTenantlowerRank" resultType="service">
+SELECT vm_service.*,tenants.name as tenants_ids
+FROM vm_service
+JOIN tenants ON vm_service.tenants_id = tenants.id
+WHERE vm_service.tenants_id = #{id}
+</select>
+
+<!-- vm_service + tenants -->
+
+<!-- user UI query end -->
+
+<select id="getApprovalCheckcnt" resultType="hashmap">
+
+SELECT COUNT(IF(vm_create.cr_sorting = 1 AND vm_create.cr_approval = #{stage}, vm_create.cr_sorting, NULL)) as createCnt,
+COUNT(IF(vm_create.cr_sorting = 2 AND vm_create.cr_approval = #{stage}, vm_create.cr_sorting, NULL)) as updateCnt,
+COUNT(IF(vm_create.cr_sorting = 3 AND vm_create.cr_approval = #{stage}, vm_create.cr_sorting, NULL)) as returnCnt
+<if test="deptId == null">
+,(select count(IF(userPWreset.nApproval in (0,3),userPWreset.nApproval ,NULL)) from userPWreset) as userPWCnt 
+</if>
+FROM vm_create JOIN sdsc_user ON vm_create.cr_sUserID = sdsc_user.sUserID
+<if test="deptId != null">
+WHERE sdsc_user.sDepartment = #{deptId} 
+</if>
+</select>
+
+<select id="getWorkflowStateList" resultType="com.kdis.PROM.logic.WorkflowStatus">
+select * from workflowStatus order by name;
+</select>
+
+<select id="companyRelationTenants" resultType="Integer">
+SELECT count(*)
+FROM tenants
+JOIN company ON tenants.company_id = company.id where tenants.company_id = #{id}
+</select>
+
+<select id="autoFilter" resultType="monitoringJoin">
+SELECT tenants.name,vm_service.vm_service_name,vm_data_info.*
+FROM vm_data_info
+JOIN vm_service join tenants ON vm_service.vm_service_ID = vm_data_info.vm_service_ID and vm_service.tenants_id = tenants.id
+WHERE CONCAT(tenants.name,vm_service.vm_service_name,vm_data_info.vm_name,vm_cpu,vm_memory,vm_disk) LIKE CONCAT('%',#{inputed},'%')
+</select>
+
+<!-- vm_data_info -->
+<select id="getTenantsInServiceOfVMs" resultType="vmDataInfo">
+select vm_data_info.* from vm_data_info
+JOIN vm_service ON vm_data_info.vm_service_ID = vm_service.vm_service_ID
+JOIN tenants ON tenants.id = vm_service.tenants_id 
+<if test="serviceID != null and serviceID > 0">
+where vm_data_info.vm_service_ID = #{serviceID}
+</if>
+
+<if test="(tenantsID != null and tenantsID > 0) and (serviceID == null or serviceID == 0)">
+<where>
+and vm_service.tenants_id = #{tenantsID}
+</where>
+</if>
+
+<if test="limitChk != null">
+and vm_data_info.vm_status = 'poweredOn' order by length(vm_data_info.vm_name) desc, vm_data_info.vm_name desc limit 1;
+</if>
+
+</select>
+
+<select id="getClusterinHostInfoinVM" resultType="vmDataInfo">
+select * from vm_data_info 
+<if test="hostName == 'hostAll'">
+</if>
+<if test="hostName != 'hostAll'">
+where vm_host = #{hostName}
+</if>
+</select>
+
+<select id="getSearchServiceInVM" resultType="vmDataInfo">
+SELECT *
+FROM vm_data_info
+WHERE vm_service_ID = #{choiceServiceID} AND vm_name LIKE CONCAT('%',#{inputed},'%')
+ORDER BY vm_name
+</select>
+
+<select id="getVMID" resultType="vmDataInfo">
+SELECT vm_ID
+FROM vm_data_info
+WHERE vm_name = #{vm_name}
+</select>
+
+<select id="AllSearchVMlist" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where vm_name like CONCAT('%',#{inputed},'%') and vm_templet = 'false'
+</select>
+
+<select id="SearchVMlist" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where vm_name like CONCAT('%',#{inputed},'%') and vm_service_ID = 0 and vm_templet = 'false'
+</select>
+
+<select id="service_inVMdetail" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where vm_ID = #{vm_ID}
+</select>
+
+<select id="service_INVMlist" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where vm_service_ID = #{vm_service_ID} 
+<if test="status != null">
+and vm_status = 'poweredOn'
+</if>
+order by vm_name
+</select>
+
+<select id="VMAllinfolist" resultType="vmDataInfo">
+select * from vm_data_info
+
+<!-- 삭제 예정 -->
+<if test="sEp_num != null">
+where sEp_num = #{sEp_num}
+</if>
+order by vm_name
+</select>
+
+<select id="getVMoneinfoName" resultType="vmDataInfo">
+select * from vm_data_info where vm_name = #{name}
+</select>
+
+<select id="getTemplateList" resultType="vmDataInfo">
+SELECT *
+FROM vm_data_info
+WHERE vm_templet = 'true'
+ORDER BY ${order}
+</select>
+
+<select id="undeployedautoFilter" resultType="vmDataInfo">
+select * from vm_data_info where vm_service_ID = 0 and vm_templet = "false" 
+and CONCAT(vm_name,vm_cpu,vm_memory,vm_disk) LIKE CONCAT('%',#{inputed},'%') 
+<if test='orderSwitch == "true"'>
+order by ${order}
+</if>
+<if test='orderSwitch == "false"'>
+order by ${order} DESC
+</if>
+</select>
+
+<select id="autoSearchTenantsInServiceVMs" resultType="vmDataInfo">
+SELECT tenants.name,vm_service.vm_service_name as servicename,vm_data_info.*
+FROM vm_data_info
+JOIN vm_service ON vm_data_info.vm_service_ID = vm_service.vm_service_ID
+Join tenants on vm_service.tenants_id = tenants.id
+<if test="tenantsID > 0 &amp;&amp; serviceID == -1">
+where vm_service.tenants_id = #{tenantsID}
+</if>
+<if test='tenantsID == 0 &amp;&amp; serviceID == -1'>
+WHERE vm_data_info.vm_service_ID > 0
+</if>
+<if test='tenantsID == 0 &amp;&amp; serviceID > -1'>
+WHERE vm_data_info.vm_service_ID = #{serviceID}
+</if>
+<if test='tenantsID > 0 &amp;&amp; serviceID != -1'>
+where vm_data_info.vm_service_ID = #{serviceID} and vm_service.tenants_id = #{tenantsID}
+</if>
+and CONCAT(tenants.name,vm_service.vm_service_name,vm_name,vm_cpu,vm_memory,vm_disk,vm_OS,vm_status) LIKE CONCAT('%',#{inputed},'%')
+order by vm_service_name 
+</select>
+
+<!-- vm_data_info end -->
+
+<select id="tempCount" resultType="Integer">
+select count(*) from vm_storage
+</select>
+
+<select id="getVMoslinuxListSearch" resultType="vmDataInfo">
+SELECT *
+FROM vm_data_info
+WHERE vm_name like CONCAT('%',#{inputed},'%') and vm_OS REGEXP 'Linux|CentOS' AND vm_templet = 'false' order by vm_name;
+</select>
+
+<select id="AllSearchHostlist" resultType="hostInfo" parameterType="map">
+select * from vm_host_info where vm_Hhostname like CONCAT('%',#{inputed},'%')
+</select>
+
+<select id="getVMoslinuxList" resultType="vmDataInfo">
+SELECT *
+FROM vm_data_info
+WHERE vm_OS REGEXP 'Linux|CentOS' AND vm_templet = 'false' order by vm_name;
+</select>
+
+<!-- autoScale -->
+<select id="getAutoScaleList" resultType="autoScale">
+SELECT autoscale.*,vm_service.vm_service_name as serviceName,vm_data_info.vm_name as vmName,vm_service.tenants_id as tenants_id
+FROM autoscale
+LEFT JOIN vm_service ON vm_service.vm_service_ID = autoscale.service_id
+LEFT JOIN vm_data_info ON vm_data_info.vm_ID = autoscale.template_id
+
+<if test="id != null">
+where autoscale.id = #{id}
+</if>
+
+<if test="service_id != null">
+where vm_service.vm_service_ID = #{service_id}
+</if>
+
+<if test="isUse != null">
+where isUse = #{isUse}
+</if>
+
+</select>
+
+<select id="getServiceInVMvalChk" resultType="hashmap">
+
+SELECT ROUND(AVG(cpu)) AS cpuAvg, ROUND(AVG(memory)) AS memAvg
+FROM
+ (
+SELECT avg(cpu) as cpu, avg(memory) as memory
+FROM perfVMRealtime AS perf
+JOIN vm_data_info ON vm_data_info.vm_ID = perf.id
+WHERE (vm_data_info.vm_service_ID = #{service_id}) AND (perf.timestamp > DATE_ADD(NOW(), INTERVAL - 7 MINUTE))
+GROUP BY perf.timestamp
+ORDER BY perf.timestamp DESC
+LIMIT 1,3) AS Auto;
+
+</select>
+
+<!-- autoScale end -->
+
+<select id="skipcheck" resultType="com.kdis.PROM.logic.LogConfiguration">
+SELECT *
+FROM logConfiguration
+WHERE sUserID = #{sUserID};
+</select>
+
+<select id="vmDetailNotService" resultType="vmDataInfo">
+SELECT *
+FROM vm_data_info
+WHERE vm_service_ID = 0 AND vm_templet = 'false' order by vm_status desc;
+</select>
+
+<select id="vmDetailService" resultType="com.kdis.PROM.logic.VmOneDetail">
+SELECT vm_service.vm_service_ID,vm_service.vm_service_name,vm_data_info.vm_ID,vm_data_info.vm_name,vm_devices,cpuHotAdd,memoryHotAdd,vm_status,vm_OS
+FROM vm_data_info
+JOIN vm_service ON vm_data_info.vm_service_ID = vm_service.vm_service_ID where vm_service.vm_service_ID  = #{vm_service_ID} order by vm_status desc
+</select>
+
+<select id="storageUseList" resultType="vmStorage">
+select * from vm_storage order by st_space desc
+</select>
+
+<!-- 삭제 예정 -->
+<select id="monitoringSearch" resultType="com.kdis.PROM.logic.PowerOffCheck">
+SELECT Ep_service.sEp_name,vm_service.vm_service_name,vm_data_info.vm_name
+FROM vm_service
+JOIN vm_data_info ON vm_service.vm_service_ID = vm_data_info.vm_service_ID
+JOIN Ep_service ON Ep_service.nEp_num = vm_service.nEp_num and vm_name like CONCAT('%',#{inputed},'%')
+</select>
+
+<select id="vmapplyList" resultType="vmCreate">
+select * from vm_create where cr_approval = 1 order by cr_sorting,cr_datetime desc
+</select>
+
+<select id="gethostInVMvalue" resultType="hostInfo" parameterType="map">
+SELECT vm_host_info.*
+FROM vm_host_info
+JOIN vm_data_info ON vm_host_info.vm_Hhostname = vm_data_info.vm_host
+where vm_host_info.vm_HID = #{hostID};
+</select>
+
+<!-- 삭제 예정 -->
+<select id="EpserviceCount" resultType="Integer" parameterType="map">
+select count(*) from Ep_service join vm_service on Ep_service.nEp_num = vm_service.nEp_num where Ep_service.nEp_num = #{nEp_num};
+</select>
+
+<!-- 수정 예정 -->
+<select id="EpMeteringDetail" resultType="com.kdis.PROM.logic.MeteringSum" parameterType="map">
+SELECT meteringSum.*,vm_service.vm_service_name as sVm_service_name
+FROM meteringSum
+JOIN vm_service ON meteringSum.nVm_service_ID = vm_service.vm_service_ID
+WHERE dMeteringDate LIKE '${Month}-%' AND vm_service.nEp_num = #{sEp_num} and nVm_service_ID = #{vm_service_ID} and nVm_service_ID is not null;
+</select>
+
+<!-- 삭제 예정 -->
+<select id="EpInVM" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where sEp_num = #{sEp_num} and vm_service_ID = 0; 
+</select>
+<!-- 삭제 예정 -->
+<select id="Ep_INservice" resultType="Integer" parameterType="map">
+select count(*) from vm_service where nEp_num = #{nEp_num}
+</select>
+<!-- 삭제 예정 -->
+<select id="Ep_exitservicelist" resultType="service">
+select * from vm_service where nEp_num is null
+</select>
+<!-- 삭제 예정 -->
+<select id="EpNamecheck" resultType="com.kdis.PROM.logic.Ep_service" parameterType="map">
+select * from Ep_service where sEp_name = #{inputed}
+</select>
+<!-- 삭제 예정 -->
+<select id="maxEpnum" resultType="Integer">
+select max(nEp_num) from Ep_service
+</select>
+<!-- 삭제 예정 -->
+<select id="EPinView" resultType="service" parameterType="map">
+select vm_service.* from vm_service join Ep_service on Ep_service.nEp_num = vm_service.nEp_num where Ep_service.nEp_num = #{nEp_num}
+</select>
+<!-- 삭제 예정 -->
+<select id="EPserviceList" resultType="com.kdis.PROM.logic.Ep_service">
+select * from Ep_service
+<if test="nEp_num != null">
+where nEp_num = #{nEp_num}
+</if>
+</select>
+
+<select id="SelectlogConfig" resultType="com.kdis.PROM.logic.LogConfiguration" parameterType="map">
+select * from logConfiguration where sUserID = #{sUserID}
+</select>
+
+<select id="Host_Status" resultType="hashmap">
+SELECT COUNT(CASE WHEN vm_Hpower='connected' THEN 1 END) AS powerOn, COUNT(CASE WHEN vm_Hpower='notResponding' THEN 1 END) AS powerOff,COUNT(*) as allCtn
+FROM vm_host_info
+</select>
+
+<select id="meteringVMsTableData" resultType="com.kdis.PROM.logic.MeteringVMs" parameterType="map">
+select nVm_service_ID,sVm_ID,sVm_name,sum(nVm_cpu) AS nVm_cpu,sum(nVm_memory) AS nVm_memory from meteringVMs where nVm_service_ID = #{nVm_service_ID} and dMeteringDate = '${format}' group by sVm_name
+</select>
+
+<select id="vm_storageDetail" resultType="vmStorage">
+select * from vm_storage where st_ID = '${st_ID}';
+</select>
+
+<select id="meteringVMsSelect" resultType="com.kdis.PROM.logic.MeteringVMs" parameterType="map">
+select * from meteringVMs where nVm_service_ID = #{nVm_service_ID} and dMeteringDate LIKE '${format}%';
+</select>
+
+<select id="MeteringYearMonths" resultType="com.kdis.PROM.logic.MeteringSum" parameterType="map">
+SELECT nVm_service_ID,vm_service.vm_service_name as sVm_service_name,SUM(nTotal_cpu) as nTotal_cpu, SUM(nTotal_memory) as nTotal_memory, MIN(dMeteringDate) as dMinDate, MAX(dMeteringDate) as dMaxDate, COUNT(nVm_service_ID) as nCountDay
+FROM meteringSum join vm_service on meteringSum.nVm_service_ID = vm_service.vm_service_ID
+WHERE dMeteringDate LIKE '${Month}-%' and nVm_service_ID = #{nVm_service_ID};
+</select>
+
+<select id="MeteringMonthValue" resultType="com.kdis.PROM.logic.MeteringSum" parameterType="map">
+SELECT vm_service.vm_service_name as sVm_service_name ,SUM(nTotal_cpu) AS nTotal_cpu, SUM(nTotal_memory) AS nTotal_memory
+FROM meteringSum
+JOIN vm_service ON meteringSum.nVm_service_ID = vm_service.vm_service_ID
+WHERE nVm_service_ID = #{vm_service_ID}
+</select>
+
+<select id="createNameCheck" resultType="vmDataInfo" parameterType="map">
+select vm_name from vm_data_info where vm_name = #{vm_name};
+</select>
+
+<!-- select -->
+<select id="PowerOffCheck" resultType="com.kdis.PROM.logic.PowerOffCheck">
+SELECT vm_data_info.vm_name,vm_service.vm_service_name,Ep_service.sEp_name
+FROM vm_data_info
+JOIN vm_service ON vm_service.vm_service_ID=vm_data_info.vm_service_ID
+JOIN Ep_service ON vm_service.nEp_num = Ep_service.nEp_num 
+WHERE vm_status = 'poweredOff'
+<if test="nEp_num != null">
+and vm_service.nEp_num = #{nEp_num}
+</if>
+</select>
+
+<select id="hostInVM" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where vm_host = #{vm_host} order by vm_status DESC;
+</select>
+
+<select id="meteringValue" resultType="com.kdis.PROM.logic.Metering" parameterType="map">
+
+SELECT vm_service.vm_service_ID,vm_service.vm_service_name,SUM(vm_cpu) as total_cpu, SUM(vm_memory) as total_memory
+FROM vm_service
+JOIN vm_data_info ON vm_service.vm_service_ID = vm_data_info.vm_service_ID WHERE vm_service.vm_service_ID = #{vm_service_ID} and vm_data_info.vm_status = 'poweredOn';
+
+</select>
+
+<select id="templateList" resultType="vmDataInfo" parameterType="map">
+select * from vm_data_info where vm_templet = 'true';
+</select>
+
+<select id="ServiceINVM" resultType="Integer" parameterType="map"> 
+SELECT COUNT(*) FROM vm_data_info WHERE vm_service_ID = #{vm_service_ID}
+</select>
+
+<select id="Authorityservice_list"  resultType="service">
+SELECT vm_service.*
+FROM sdsc_user
+JOIN vm_service ON sdsc_user.sEp_num = vm_service.nEp_num
+WHERE sdsc_user.sUserID = #{sUserID} and sEp_num = #{sEp_num};
+</select>
+
+<select id="SearchServiceApply" resultType="service" parameterType="map">
+select * from vm_service where vm_service_name like CONCAT('%',#{inputed},'%')
+</select>
+
+<select id="SearchServiceNotApply" resultType="service" parameterType="map">
+select * from vm_service where vm_service_name like CONCAT('%',#{inputed},'%') and vm_service_approval = 0
+</select>
+
+<select id="maxGraphnum" resultType="Integer">
+select ifnull(max(nGraphNumber),0) from vm_service_graph
+</select>
+
+<select id="serviceCount" resultType="hashmap">
+SELECT COUNT(CASE WHEN vm_service_ID > 0 and vm_templet = 'false' THEN 1 END) AS nServiceCount,
+COUNT(CASE WHEN vm_service_ID = 0 and vm_templet = 'false' THEN 1 END) AS nFreeVMCount,
+COUNT(CASE WHEN vm_templet = 'false' THEN 1 END) as nVMCount
+FROM vm_data_info
+</select>
+
+<select id="DashServiceGraph" resultType="service_graph">
+select nGraphNumber,nServiceCount,nVMCount,nFreeVMCount,DATE_FORMAT(dServiceDatetime, '%Y-%m-%d') as dServiceDatetime from vm_service_graph order by nGraphNumber desc limit 7 
+</select>
+
+<select id="vmStatus" resultType="hashmap">
+SELECT COUNT(CASE WHEN vm_status = 'poweredOn' AND vm_templet = 'false' THEN 1 END) AS vmPowerOn,
+COUNT(CASE WHEN vm_status = 'poweredOff' AND vm_templet = 'false' THEN 1 END) AS vmPowerOff,
+COUNT(CASE WHEN vm_templet = 'true' THEN 1 END) as vmTemplate
+FROM vm_data_info
+</select>
+
+<select id="EpINservicecheck" resultType="Integer" parameterType="map">
+select count(*) from vm_service where nEp_num = #{nEp_num}
+</select>
+
+<!-- vm_create table start -->
+
+<select id="notapplyVMdetail" resultType="vmCreate" parameterType="map">
+select * from vm_create where cr_num = #{cr_num} and cr_approval = 0;
+</select>
+
+<!-- vm_create end -->
+
+<select id="Mservice_detail_sename" resultType="service" parameterType="map">
+select * from vm_service where vm_service_ID = #{vm_service_ID}
+</select>
+
+<select id="service_detailInfo" resultType="monitoringJoin" parameterType="map">
+SELECT vm_service_ID,vm_ID,vm_name,vm_cpu,vm_memory,vm_disk,vm_OS,vm_host,vm_status,vm_DataStore
+FROM vm_data_info 
+WHERE vm_service_ID = #{vm_service_ID}  and vm_templet = 'false' order by vm_status DESC,vm_ID
+</select>
+
+<select id="SearchServicelist" resultType="service" parameterType="map">
+select * from vm_service where vm_service_name like CONCAT('%',#{inputed},'%') and nEp_num is null
+</select>
+
+<select id="notapprovalVMCR_list" resultType="vmCreate">
+select sdsc_user.sName as userName,vm_create.* from vm_create
+JOIN sdsc_user ON vm_create.cr_sUserID = sdsc_user.sUserID
+where cr_approval = 0 limit 4;
+</select>
+
+<select id="vmcreatewaitOne" resultType="vmCreate">
+select * from vm_create
+</select>
+
+<select id="VMHostinfo" resultType="hostInfo">
+select * from vm_host_info 
+<if test="vm_HID != null">
+where vm_HID = #{vm_HID}
+</if>
+order by vm_Hhostname
+</select>
+
+<select id="servicelist" resultType="service">
+SELECT service.*,t.name AS tenants_ids,
+IFNULL(hn.netWorkName,'미지정') AS default_networkName, 
+IFNULL(hd.dataStoreName,'미지정') AS default_storageName,
+IFNULL(u.sName,'관리자 미지정') as vm_service_sUserName
+FROM (SELECT s.*,COUNT(d.vm_service_ID) AS countVM FROM vm_service AS s LEFT JOIN vm_data_info AS d ON s.vm_service_ID = d.vm_service_ID GROUP BY s.vm_service_ID ) AS service
+LEFT JOIN tenants AS t ON service.tenants_id = t.id
+LEFT JOIN sdsc_user AS u ON service.vm_service_sUserID = u.id
+LEFT JOIN vm_data_info AS d ON service.vm_service_ID = d.vm_service_ID
+LEFT JOIN hostDataStore AS hd ON service.default_storage = hd.dataStoreID
+LEFT JOIN hostNetwork AS hn ON service.default_network = hn.netWorkID
+GROUP BY service.vm_service_ID;
+</select>
+
+<select id="maxnum" resultType="Integer">
+select ifnull(max(vm_service_ID),0) from vm_service
+</select>
+
+<select id="getserviceOne" resultType="service" parameterType="map">
+select * from vm_service where vm_service_name = #{vm_service_name}
+</select>
+
+<!-- insert -->
+
+<insert id="autoScaleInsert">
+insert into autoscale(id,service_id,cpuUp,memoryUp,cpuDown,memoryDown,minVM,maxVM,naming,postfix,startIP,endIP,isUse,template_id,status)
+			values(#{id},#{service_id},#{cpuUp},#{memoryUp},#{cpuDown},#{memoryDown},#{minVM},#{maxVM},#{naming},#{postfix},#{startIP},#{endIP},#{isUse},#{template_id},0);
+</insert>
+
+<insert id="WeblogConfiginsert" parameterType="map">
+insert into logConfiguration(sUserID,nCategory,nWebloglimit,nConfirm,nLoginoutskip)
+			 values(#{sUserID},0,#{nWebloglimit},#{nConfirm},#{nLoginoutskip});
+</insert>
+
+<insert id="vROinsert">
+insert into vROConfig(vROURL,vROSSOID,vROSSOPW)
+             values(#{vROURL},#{vROSSOID},#{vROSSOPW})
+</insert>
+
+<insert id="meteringVMsInsert">
+insert into meteringVMs(nVm_service_ID,sVm_ID,sVm_name,nVm_cpu,nVm_memory,sVm_host,dMeteringDate)
+				 values(#{nVm_service_ID},#{sVm_ID},#{sVm_name},#{nVm_cpu},#{nVm_memory},#{sVm_host},#{dMeteringDate})
+</insert>
+
+<insert id="service_graphInsert">
+insert into vm_service_graph(nGraphNumber,nVMCount,nServiceCount,nFreeVMCount,dServiceDatetime) 
+						values(#{nGraphNumber},#{nVMCount},#{nServiceCount},#{nFreeVMCount},CURDATE());
+</insert>
+
+<insert id="VMcreate">
+insert into vm_create (cr_num,cr_sorting,cr_sUserID,cr_vm_name,cr_cpu,cr_memory,cr_disk,cr_vmcontext,cr_ipaddress,cr_templet,cr_host,cr_storage,cr_approval,cr_datetime,cr_applytime,cr_netWork,vm_service_ID)
+				 values(#{cr_num},#{cr_sorting},#{cr_sUserID},#{cr_vm_name},#{cr_cpu},#{cr_memory},#{cr_disk},#{cr_vmcontext},#{cr_ipaddress},#{cr_templet},#{cr_host},#{cr_storage},#{cr_approval},now(),now(),#{cr_netWork},#{vm_service_ID})
+</insert>
+
+<insert id="MeteringSum">
+insert into meteringSum (nVm_service_ID,nTotal_cpu,nTotal_memory,dMeteringDate)
+values(#{nVm_service_ID},#{nTotal_cpu},#{nTotal_memory},CURDATE());
+</insert>
+
+
+<delete id="autoScaleDelete">
+delete from autoscale where id = #{id}
+</delete>
+
+<delete id="VMDelete">
+delete from vm_create where cr_num = #{cr_num}
+</delete>
+
+<!-- update -->
+
+<update id="autoScalePreVMUpdate">
+update autoscale set next_vm = #{vm_name},postfix = #{nPostfix} where id = #{id}
+</update>
+
+<update id="autoScaleStatusUpdate">
+update autoscale set status = #{val} 
+<if test="col != null">
+,next_vm = null
+</if>
+where id = #{id}
+
+</update>
+
+<update id="autoScaleUpdate">
+update autoscale set service_id=#{service_id},cpuUp=#{cpuUp},memoryUp=#{memoryUp},cpuDown=#{cpuDown},memoryDown=#{memoryDown},minVM=#{minVM}
+,maxVM=#{maxVM},naming=#{naming},postfix=#{postfix},startIP=#{startIP},endIP=#{endIP},isUse=#{isUse},template_id=#{template_id} where id = #{id}
+</update>
+
+<update id="applyVMDetailReturn">
+update vm_data_info set vm_data_info.vm_service_ID = 0 where vm_data_info.vm_name = #{vmName}
+</update>
+
+<update id="serviceUpdate">
+update vm_service set 
+vm_service_name = #{vm_service_name},
+vm_service_sUserID=#{vm_service_sUserID},
+tenants_id=#{tenants_id},
+default_cluster=#{default_cluster},
+default_host=#{default_host},
+default_storage=#{default_storage},
+default_network=#{default_network},
+default_netmask=#{default_netmask},
+default_gateway=#{default_gateway},
+dhcp_onoff=#{dhcp_onoff},
+updated_on=now(),
+description=#{description}
+
+where vm_service_ID = #{vm_service_ID}
+</update>
+
+<update id="EpDelete" parameterType="map">
+update vm_service set nEp_num = null where vm_service_ID = #{vm_service_ID};
+</update>
+
+<update id="Ep_serviceupdate" parameterType="map">
+update vm_service set nEp_num = #{nEp_num} where vm_service_ID = #{vm_service_ID};
+</update>
+
+<update id="WeblogConfigUpdate" parameterType="map">
+update logConfiguration set nWebloglimit = #{nWebloglimit},nConfirm = #{nConfirm},nLoginoutskip = #{nLoginoutskip} where sUserID = #{sUserID}
+</update>
+
+<update id="vROupdate">
+update vROConfig set vROURL = #{vROURL} , vROSSOID = #{vROSSOID} , vROSSOPW = #{vROSSOPW} , vCURL = #{vCURL}
+</update>
+
+<update id="meteringVMsUpdate">
+update meteringVMs set nVm_cpu =  nVm_cpu + #{nVm_cpu} , nVm_memory = nVm_memory + #{nVm_memory} , sVm_name = #{sVm_name} where sVm_ID = #{sVm_ID} and dMeteringDate = #{dMeteringDate}
+</update>
+
+<update id="VMserviceCount">
+update vm_data_info set vm_service_ID = 1 where vm_ID = #{vm_ID}
+</update>
+
+<update id="Ep_update">
+update Ep_service set sEp_name = #{sEp_name} where nEp_num = #{nEp_num}
+</update>
+
+<update id="applyserviceDetail">
+update vm_service set vm_service_approval = 1 where vm_service_ID = #{vm_service_ID};
+</update>
+
+</mapper>

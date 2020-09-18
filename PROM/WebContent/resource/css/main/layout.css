@@ -1,0 +1,123 @@
+@charset "UTF-8";
+
+body {
+	overflow-x: hidden;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.row {
+	margin-right: -7.5px;
+	margin-left: -7.5px;
+}
+
+.row>div[class*=col-] {
+	padding-right: 7.5px;
+	padding-left: 7.5px;
+}
+
+.row-padding-0 {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+}
+
+.row-padding-0>div[class*=col-] {
+	padding: 0;
+}
+
+/* 내비바 레이아웃 */
+nav.navbar {
+	height: 50px;
+	padding: 0;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 사이드바 레이아웃 */
+.sidebar {
+	width: 215px;
+	height: 100vh;
+	z-index: 1029;
+	transform: translateX(0);
+	transition: transform 0.15s ease-in-out;
+	position: fixed;
+}
+
+.sidebar-toggle .sidebar {
+	transform: translateX(-215px);
+}
+
+/* 사이드바 - 사이드바 콘텐트 레이아웃 */
+.sidebar nav.sidebar-content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding-top: 50px;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 사이드바 - 사이드바 헤더 레이아웃 */
+.sidebar nav.sidebar-content .sidebar-header {
+	padding: 15px 20px;
+}
+
+/* 사이드바 - 사이드바 바디 레이아웃 */
+.sidebar nav.sidebar-content .sidebar-body {
+	height: 100%;
+	overflow-y: auto;
+}
+
+/* 사이드바 - 사이드바 푸터 레이아웃 */
+.sidebar nav.sidebar-content .sidebar-footer {
+	padding: 20px;
+}
+
+/* 콘텐트 래퍼 레이아웃 */
+.content-wrapper {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	position: relative;
+	top: 50px;
+	min-height: calc(100vh - 50px);
+}
+
+/* 콘텐트 래퍼 - 디렉토리 레이아웃 */
+.content-wrapper .page-directory {
+	padding: 15px 20px;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 콘텐트 래퍼 - 콘텐트 레이아웃 */
+.content-wrapper .content {
+	padding: 20px;
+}
+
+/* 브라우저 크기 992px 이상 */
+@media (min-width: 992px) {
+
+	/* 기본으로 사이드바 표시됨 */
+	/* 사이드바 토글버튼 클릭 시 사이드바 숨김 */
+	.content-wrapper {
+		padding-left: 215px;
+		transition: padding 0.15s ease-in-out;
+	}
+
+	.sidebar-toggle .content-wrapper {
+		padding-left: 0;
+	}
+}
+
+/* 브라우저 크기 992px 이하 */
+@media (max-width: 992px) {
+
+	/* 기본으로 사이드바 숨김 */
+	/* 사이드바 토글버튼 클릭 시 사이드바 표시 */
+	.sidebar {
+		transform: translateX(-215px);
+	}
+
+	.sidebar-toggle .sidebar {
+		transform: translateX(0);
+	}
+}

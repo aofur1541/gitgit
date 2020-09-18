@@ -1,0 +1,36 @@
+@charset "utf-8";
+
+.error-page {
+	background: #ecedef;
+	color: #111e40;
+}
+
+.error-page a {
+	text-decoration: none;
+}
+
+.error-page h1 {
+	font-size: 6rem;
+	position: absolute;
+	top: 20%;
+	left: 50%;
+	transform: translate(-50%, -20%);
+	white-space: nowrap;
+}
+
+.error-page img {
+	height: 400px;
+}
+
+.errorpage-title {
+	position: absolute;
+	z-index: 1;
+}
+
+.errorpage-img {
+	position: relative;
+}
+
+.bg-error-dark {
+	background-color: #24466e;
+}

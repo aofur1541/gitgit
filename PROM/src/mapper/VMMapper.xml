@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.apply.dao.VMDAO">
+
+	<select id="selectVMDataList" resultType="VMDataVO" parameterType="VMDataVO">
+		select 
+			d.vm_ID vmID,
+			d.vm_name vmName,
+			d.vm_cpu vmCPU,
+			d.vm_memory vmMemory,
+			d.vm_disk vmDisk,
+			d.vm_host vmHost,
+			h.vm_HID hostId,
+			d.vm_DataStore vmDataStore,
+			d.vm_vmtools_status vmToolsStatus,
+			d.vm_ipaddr1 vmIpaddr1,
+			d.vm_ipaddr2 vmIpaddr2,
+			d.vm_ipaddr3 vmIpaddr3,
+			d.vm_status vmStatus,
+			d.vm_templet vmTemplet,
+			d.vm_OS vmOS,d.vm_service_ID vmServiceID,
+			s.vm_service_name vmServiceName,
+			t.id tenantId,
+			t.name tenantName,
+			d.vm_createtime vmCreatetime,
+			d.vm_devices vmDevices,
+			d.sEp_num sEpNum,
+			d.cpuHotAdd cpuHotAdd,
+			d.memoryHotAdd memoryHotAdd,
+			d.template_onoff templateOnoff,
+			d.description description,
+			c.clusterName
+		from vm_data_info d
+			join vm_host_info h on h.vm_Hhostname = d.vm_host
+			join clusterInfo c on c.clusterName = h.hostParent
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on s.tenants_id = t.id
+		where d.vm_templet = 'false'
+		<if test='tenantId == -1 or vmServiceID == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='clusterId == null and tenantId == null'>
+			<!-- 테넌트 전체 -->
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='tenantId != null and tenantId != -1'>
+			<!-- 테넌트 선택 -->
+			and s.tenants_id = #{tenantId}
+		</if>	
+		<if test='clusterId == null and tenantId != -1 and vmServiceID == null'>
+			<!-- 서비스 전체 -->
+			and d.vm_service_ID is not null and d.vm_service_ID != 0
+		</if>	
+		<if test='tenantId != -1 and vmServiceID != null and vmServiceID != -1'>
+			<!-- 서비스 선택 -->
+			and d.vm_service_ID = #{vmServiceID}
+		</if>
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			AND c.clusterId = #{clusterId}
+		</if>
+		<if test='hostId != null and hostId != "hostAll"'>
+			AND h.vm_HID = #{hostId}
+		</if>
+		order by d.vm_name
+	</select>
+	
+	<select id="selectVMDataListByUserMapping" resultType="VMDataVO" parameterType="VMDataVO">
+		select 
+			d.vm_ID vmID,
+			d.vm_name vmName,
+			d.vm_cpu vmCPU,
+			d.vm_memory vmMemory,
+			d.vm_disk vmDisk,
+			d.vm_host vmHost,
+			d.vm_DataStore vmDataStore,
+			d.vm_vmtools_status vmToolsStatus,
+			d.vm_ipaddr1 vmIpaddr1,
+			d.vm_ipaddr2 vmIpaddr2,
+			d.vm_ipaddr3 vmIpaddr3,
+			d.vm_status vmStatus,
+			d.vm_templet vmTemplet,
+			d.vm_OS vmOS,d.vm_service_ID vmServiceID,
+			s.vm_service_name vmServiceName,
+			t.id tenantId,
+			t.name tenantName,
+			d.vm_createtime vmCreatetime,
+			d.vm_devices vmDevices,
+			d.sEp_num sEpNum,
+			d.cpuHotAdd cpuHotAdd,
+			d.memoryHotAdd memoryHotAdd,
+			d.template_onoff templateOnoff,
+			d.description description
+		from vm_data_info d
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where d.vm_templet = 'false'
+			and m.user_id = #{userId}
+		<if test='tenantId == -1 or vmServiceID == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='tenantId == null'>
+			<!-- 테넌트 전체 -->
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='tenantId != null and tenantId != -1'>
+			<!-- 테넌트 선택 -->
+			and s.tenants_id = #{tenantId}
+		</if>	
+		<if test='tenantId != -1 and vmServiceID == null'>
+			<!-- 서비스 전체 -->
+			and d.vm_service_ID is not null and d.vm_service_ID != 0
+		</if>	
+		<if test='tenantId != -1 and vmServiceID != null and vmServiceID != -1'>
+			<!-- 서비스 선택 -->
+			and d.vm_service_ID = #{vmServiceID}
+		</if>
+		order by d.vm_name desc
+	</select>
+	
+	<select id="selectArrangedVMList" resultType="VMDataVO" parameterType="VMDataVO">
+		select 
+			t.id tenantId,
+			t.name tenantName,
+			v.vm_service_ID vmServiceID,
+			s.vm_service_name vmServiceName,
+			v.vm_ID vmID,
+			v.vm_name vmName,
+			v.vm_cpu vmCPU,
+			v.vm_memory vmMemory,
+			v.vm_disk vmDisk,
+			v.vm_host vmHost,
+			v.vm_DataStore vmDataStore,
+			v.vm_vmtools_status vmToolsStatus,
+			v.vm_ipaddr1 vmIpaddr1,
+			v.vm_ipaddr2 vmIpaddr2,
+			v.vm_ipaddr3 vmIpaddr3,
+			v.vm_status vmStatus,
+			v.vm_templet vmTemplet,
+			v.vm_OS vmOS,
+			v.vm_createtime vmCreatetime,
+			v.vm_devices vmDevices,
+			v.sEp_num sEpNum,
+			v.cpuHotAdd cpuHotAdd,
+			v.memoryHotAdd memoryHotAdd,
+			v.template_onoff templateOnoff,
+			v.description description
+		from vm_data_info v, vm_service s, tenants t
+		where v.vm_service_ID = s.vm_service_ID
+		and s.tenants_id = t.id
+		order by t.id, v.vm_service_ID, v.vm_ID
+	</select>
+	
+	<select id="selectUnarrangedVMList" resultType="VMDataVO">
+		select 
+			vm_service_ID vmServiceID,
+			vm_ID vmID,
+			vm_name vmName,
+			vm_cpu vmCPU,
+			vm_memory vmMemory,
+			vm_disk vmDisk,
+			vm_host vmHost,
+			vm_DataStore vmDataStore,
+			vm_vmtools_status vmToolsStatus,
+			vm_ipaddr1 vmIpaddr1,
+			vm_ipaddr2 vmIpaddr2,
+			vm_ipaddr3 vmIpaddr3,
+			vm_status vmStatus,
+			vm_templet vmTemplet,
+			vm_OS vmOS,
+			vm_createtime vmCreatetime,
+			vm_devices vmDevices,
+			sEp_num sEpNum,
+			cpuHotAdd cpuHotAdd,
+			memoryHotAdd memoryHotAdd,
+			template_onoff templateOnoff,
+			description description
+		from vm_data_info
+		where (vm_service_ID = 0 or vm_service_ID is null)
+		and vm_templet = "false"
+		order by vm_ID
+	</select>
+	
+	<select id="selectVMTemplateList" parameterType="VMDataVO" resultType="VMDataVO">
+		select 
+			vm_service_ID vmServiceID,
+			vm_ID vmID,
+			vm_name vmName,
+			vm_cpu vmCPU,
+			vm_memory vmMemory,
+			vm_disk vmDisk,
+			vm_host vmHost,
+			vm_DataStore vmDataStore,
+			vm_vmtools_status vmToolsStatus,
+			vm_ipaddr1 vmIpaddr1,
+			vm_ipaddr2 vmIpaddr2,
+			vm_ipaddr3 vmIpaddr3,
+			vm_status vmStatus,
+			vm_templet vmTemplet,
+			vm_OS vmOS,
+			vm_createtime vmCreatetime,
+			vm_devices vmDevices,
+			sEp_num sEpNum,
+			cpuHotAdd cpuHotAdd,
+			memoryHotAdd memoryHotAdd,
+			template_onoff templateOnoff,
+			description description
+		from vm_data_info
+		where vm_templet = 'true'
+		order by vm_OS
+	</select>
+	
+	<select id="selectVMTemplateOnList" parameterType="VMDataVO" resultType="VMDataVO">
+		select
+			vm_service_ID vmServiceID,
+			vm_ID vmID,
+			vm_name vmName,
+			vm_cpu vmCPU,
+			vm_memory vmMemory,
+			vm_disk vmDisk,
+			vm_host vmHost,
+			vm_DataStore vmDataStore,
+			vm_vmtools_status vmToolsStatus,
+			vm_ipaddr1 vmIpaddr1,
+			vm_ipaddr2 vmIpaddr2,
+			vm_ipaddr3 vmIpaddr3,
+			vm_status vmStatus,
+			vm_templet vmTemplet,
+			vm_OS vmOS,
+			vm_createtime vmCreatetime,
+			vm_devices vmDevices,
+			sEp_num sEpNum,
+			cpuHotAdd cpuHotAdd,
+			memoryHotAdd memoryHotAdd,
+			template_onoff templateOnoff,
+			description description
+		from vm_data_info 
+		where template_onoff = 1 
+		<if test='searchParam != null and searchParam != ""'>	
+			and concat(vm_name,vm_OS,vm_cpu,vm_memory,vm_disk,description) like concat('%',#{searchParam},'%')
+		</if>
+		order by vm_name ${sort}
+	</select>
+	
+	<select id="selectVMData" resultType="VMDataVO">
+		select 
+			vm_service_ID vmServiceID,
+			vm_ID vmID,
+			vm_name vmName,
+			vm_cpu vmCPU,
+			vm_memory vmMemory,
+			vm_disk vmDisk,
+			vm_host vmHost,
+			vm_DataStore vmDataStore,
+			vm_vmtools_status vmToolsStatus,
+			vm_ipaddr1 vmIpaddr1,
+			vm_ipaddr2 vmIpaddr2,
+			vm_ipaddr3 vmIpaddr3,
+			vm_status vmStatus,
+			vm_templet vmTemplet,
+			vm_OS vmOS,
+			vm_createtime vmCreatetime,
+			vm_devices vmDevices,
+			sEp_num sEpNum,
+			cpuHotAdd cpuHotAdd,
+			memoryHotAdd memoryHotAdd,
+			template_onoff templateOnoff,
+			description description
+		from vm_data_info
+		where 1 = 1 
+		<if test='vmID != null'>	
+			and vm_ID = #{vmID}
+		</if>
+		<if test='vmName != null'>	
+			and vm_name = #{vmName}
+		</if>
+		order by vm_ID desc
+		limit 1
+	</select>
+	
+	<select id="selectApplyVMList" parameterType="VMCreateVO" resultType="VMCreateVO">
+		select
+			c.cr_num crNum,
+			c.cr_sorting crSorting,
+			c.cr_sUserID crUserID,
+			c.cr_vm_name crVMName,
+			c.cr_cpu crCPU,
+			c.cr_memory crMemory,
+			c.cr_disk crDisk,
+			c.cr_vmcontext crVMContext,
+			c.cr_ipaddress crIPAddress,
+			c.cr_templet crTemplet,
+			c.cr_host crHost,
+			c.cr_storage crStorage,
+			c.cr_approval crApproval,
+			c.cr_datetime crDatetime,
+			c.cr_applytime crApplytime,
+			c.cr_netWork crNetWork,
+			c.vm_service_ID vmServiceID, 
+			t.name tenantName,
+			s.vm_service_name serviceName,
+			u.sName userName,
+			workflow.stage,
+			workflow.status,
+			d.vm_ID vmID,
+			ifnull(d.vm_cpu, 0) vmCPU, 
+			ifnull(d.vm_memory, 0) vmMemory,
+			d.vm_host vmHost
+		from vm_create c
+			join sdsc_user u on u.sUserID = c.cr_sUserID
+			join (
+					select a.*
+					from approvalWorkflow a, 
+						(
+							select cr_num, max(stage) stage 
+							from approvalWorkflow 
+							group by cr_num
+						) w
+					where a.cr_num = w.cr_num and a.stage = w.stage
+				) workflow on workflow.cr_num = c.cr_num
+			left join vm_service s on s.vm_service_ID = c.vm_service_ID 
+			left join tenants t on t.id = s.tenants_id
+			left join vm_data_info d on d.vm_name = c.cr_vm_name 
+		where c.cr_sorting = #{crSorting}
+		<if test="sDepartment != null">
+			and u.sDepartment = #{sDepartment} 
+		</if>
+		<if test='nApproval lt 99'>
+			and (
+					(stage >= #{stageDown} AND (c.cr_approval >= 1 AND c.cr_approval != 7) AND u.nApproval <![CDATA[<=]]> #{nApproval})
+					OR (stage >= #{stage} AND (c.cr_approval >= 1 AND c.cr_approval = 7) AND u.nApproval <![CDATA[<=]]> #{nApproval} )
+				)
+		</if>
+	</select>
+	
+	<select id="selectApplyVMListByUserMapping" parameterType="VMCreateVO" resultType="VMCreateVO">
+		select
+			c.cr_num crNum,
+			c.cr_sorting crSorting,
+			c.cr_sUserID crUserID,
+			c.cr_vm_name crVMName,
+			c.cr_cpu crCPU,
+			c.cr_memory crMemory,
+			c.cr_disk crDisk,
+			c.cr_vmcontext crVMContext,
+			c.cr_ipaddress crIPAddress,
+			c.cr_templet crTemplet,
+			c.cr_host crHost,
+			c.cr_storage crStorage,
+			c.cr_approval crApproval,
+			c.cr_datetime crDatetime,
+			c.cr_applytime crApplytime,
+			c.cr_netWork crNetWork,
+			c.vm_service_ID vmServiceID, 
+			t.name tenantName,
+			s.vm_service_name serviceName,
+			u.sName userName,
+			ifnull(d.vm_cpu,0) vmCPU, 
+			ifnull(d.vm_memory,0) vmMemory
+		from vm_create c
+			join sdsc_user u on u.sUserID = c.cr_sUserID
+			left join vm_service s on s.vm_service_ID = c.vm_service_ID 
+			left join tenants t on t.id = s.tenants_id
+			left join vm_data_info d on d.vm_name = c.cr_vm_name 
+		where u.id in (
+				select a.user_id 
+				from user_tenant_mapping a
+				where tenant_id in (select b.tenant_id from user_tenant_mapping b where b.user_id = #{userId})
+			) 
+		<if test='crSorting != null'>
+			and c.cr_sorting = #{crSorting}
+		</if>
+		<if test='nApproval != null'>
+			and u.nApproval != #{nApproval}
+		</if>
+	</select>
+	
+	<select id="selectApprovalWorkflowList" resultType="ApprovalWorkflowVO">
+		select 
+			a.id,
+			a.cr_num crNum,
+			a.stage,
+			a.status,
+			a.sUserID,
+			a.description,
+			a.timestamp,
+			u.sName as name
+		from approvalWorkflow a
+			join sdsc_user u on u.sUserID = a.sUserID 
+		where a.cr_num = #{crNum}
+		<if test='stage != null'>
+			and stage = #{stage}
+		</if>
+		order by a.stage
+	</select>
+	
+	<select id="selectVMCreate" resultType="VMCreateVO">
+		select
+			c.cr_num crNum,
+			c.cr_sorting crSorting,
+			c.cr_sUserID crUserID,
+			c.cr_vm_name crVMName,
+			c.cr_cpu crCPU,
+			c.cr_memory crMemory,
+			c.cr_disk crDisk,
+			c.cr_vmcontext crVMContext,
+			c.cr_ipaddress crIPAddress,
+			c.cr_templet crTemplet,
+			c.cr_host crHost,
+			c.cr_storage crStorage,
+			c.cr_approval crApproval,
+			c.cr_datetime crDatetime,
+			c.cr_applytime crApplytime,
+			c.cr_netWork crNetWork,
+			c.vm_service_ID vmServiceID, 
+			t.name tenantName,
+			s.vm_service_name serviceName
+		<if test='crSorting == 1 or crSorting == 2'>	
+			, d.vm_OS vmOS,
+			d.vm_disk vmDisk,
+			d.description description,
+			d.vm_cpu vmCPU,
+			d.vm_memory vmMemory,
+			ifnull(d.cpuHotAdd,'false') cpuHotAdd,
+			ifnull(d.memoryHotAdd,'false') memoryHotAdd
+		</if>
+		from vm_create c
+			left join vm_service s on s.vm_service_ID = c.vm_service_ID 
+			left join tenants t on t.id = s.tenants_id
+		<if test='crSorting == 1'>
+			left join vm_data_info d on d.vm_name = c.cr_templet
+		</if>
+		<if test='crSorting == 2'>
+			left join vm_data_info d on d.vm_name = c.cr_vm_name
+		</if>
+		where c.cr_num = #{crNum}
+	</select>
+	
+	<select id="countVMReturn" resultType="Integer" parameterType="VMCreateVO">
+		select 
+			count(cr_num)
+		from vm_create
+		where cr_vm_name = #{crVMName} 
+			and cr_sorting = 3 
+			and cr_approval not in (7,8)
+	</select>
+	
+	<update id="updateVmDataServiceId" parameterType="VMDataVO">
+		update vm_data_info
+		set 
+			vm_service_ID = #{vmServiceID} 
+		where vm_ID = #{vmID}
+	</update>
+	
+	<update id="updateVMTemplate">
+		update vm_data_info 
+		set 
+			template_onoff = #{templateOnoff},
+			description = #{description}
+		where vm_ID = #{vmID}  
+	</update>
+	
+	<insert id="insertVMCreate" useGeneratedKeys="true" keyProperty="crNum" parameterType="VMCreateVO">
+		insert into vm_create (
+			cr_sorting,
+			cr_sUserID,
+			cr_vm_name,
+			cr_cpu,
+			cr_memory,
+			cr_disk,
+			cr_vmcontext,
+			cr_ipaddress,
+			cr_templet,
+			cr_host,
+			cr_storage,
+			cr_approval,
+			cr_datetime,
+			cr_applytime,
+			cr_netWork,
+			vm_service_ID
+		) values (
+			#{crSorting},
+			#{crUserID},
+			#{crVMName},
+			#{crCPU},
+			#{crMemory},
+			#{crDisk},
+			#{crVMContext},
+			#{crIPAddress},
+			#{crTemplet},
+			#{crHost},
+			#{crStorage},
+			#{crApproval},
+			now(),
+			now(),
+			#{crNetWork},
+			#{vmServiceID}
+		)
+	</insert>
+	
+	<update id="updateVMCreateApproval" parameterType="VMCreateVO">
+		update vm_create 
+		set 
+		<if test='crIPAddress != null'>
+			cr_ipaddress = #{crIPAddress}, 
+		</if> 
+		<if test='crApproval == 8'>
+			cr_applytime = now(),
+		</if>
+			cr_approval = #{crApproval} 
+		where cr_num = #{crNum}
+	</update>
+	
+	<update id="holdVMCreate">
+		update vm_create 
+		set 
+			cr_comment = #{crComment},
+			cr_approval = 6
+		where cr_num = #{crNum} 
+	</update>
+	
+	<update id="rejectVMCreate">
+		update vm_create 
+		set 
+			cr_comment = #{crComment},
+			cr_approval = 7
+		where cr_num = #{crNum} 
+	</update>
+	
+	<insert id="insertApprovalWorkflow" parameterType="ApprovalWorkflowVO">
+		insert into approvalWorkflow (
+			id,
+			cr_num,
+			stage,
+			status,
+			sUserID,
+			description,
+			timestamp
+		) values (
+			#{id},
+			#{crNum},
+			#{stage},
+			#{status},
+			#{sUserID},
+			#{description},
+			now()
+		)
+	</insert>
+	
+	<update id="updateApprovalWorkflow" parameterType="ApprovalWorkflowVO">
+		update approvalWorkflow 
+		set 
+			`status` = #{status},
+			description = #{description} 
+		where cr_num = #{crNum} and stage = #{stage}
+	</update>
+	 
+	<select id="selectVMDiskList" resultType="VMDiskVO" parameterType="VMDiskVO">
+		select
+			sVmID,
+			sVmName,
+			nSCSInumber,
+			sDiskLocation,
+			nDiskCapacity
+		from vmDiskInfo
+		where 1 = 1
+		<if test="sVmID != null"> 
+			and sVmID = #{sVmID} 
+		</if>
+	</select>
+	
+	<select id="selectVMNetworkList" resultType="VMNetworkVO" parameterType="VMNetworkVO">
+		select
+			sVmID,
+			sVmName,
+			labelNumber,
+			macAddress,
+			portgroup,
+			ipAddress,
+			status
+		from vmNetworkInfo
+		where 1 = 1
+		<if test="sVmID != null"> 
+			and sVmID = #{sVmID} 
+		</if>
+	</select>
+	
+	<select id="selectVMCDROMList" resultType="VMCDROMVO" parameterType="VMCDROMVO">
+		select
+			sVmID,
+			sVmName,
+			nSCSInumber,
+			dataStoreName,
+			filePath,
+			status
+		from vmCDROMInfo
+		where sVmID = #{sVmID}
+		and status = 'true'
+	</select>
+	
+	<select id="countVMCDROM" resultType="int" parameterType="VMCDROMVO">
+		select
+			count(sVmID)
+		from vmCDROMInfo
+		where sVmID = #{sVmID}
+	</select>
+	
+	<insert id="insertVMCDROM">
+		insert into vmCDROMInfo (
+			sVmID,
+			sVmName,
+			nSCSInumber,
+			dataStoreName,
+			filePath,
+			status
+		) values (
+			#{sVmID},
+			#{sVmName},
+			#{nSCSInumber},
+			#{dataStoreName},
+			#{filePath},
+			'true'); 
+	</insert>
+	
+	<delete id="deleteVMCDROM">
+		DELETE FROM vmCDROMInfo 
+		WHERE sVmID = #{sVmID}
+	</delete>
+	
+	<select id="selectPNIC" resultType="VMDataVO">
+		SELECT DISTINCT hostName, adaptersName  FROM Physical_adapters
+		JOIN vm_host_info as vmh ON vmh.vm_Hhostname  = Physical_adapters.hostName
+		WHERE vmh.vm_HID=#{host} 
+	</select>
+	
+	<update id="updateVmDataComment" parameterType="VMDataVO">
+		update vm_data_info
+		set 
+			description = #{description} 
+		where vm_name = #{vmName}
+	</update>
+	
+</mapper>

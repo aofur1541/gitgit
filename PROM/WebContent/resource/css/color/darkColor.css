@@ -1,0 +1,88 @@
+@charset "UTF-8";
+
+body {
+	background-color: #2F343D;
+	color: #EFEFEF;
+}
+
+/* 내비바 */
+nav.navbar {
+	background: linear-gradient(360deg, rgba(41, 45, 52, 0.5) -66.5%, #292D34 -66.48%, rgba(41, 45, 52, 0) 123.49%), #434953;
+}
+
+/* 내비바 - 계정 관리 */
+nav.navbar .navbar-account>a,
+nav.navbar .navbar-account>a:hover {
+	color: #EFEFEF;
+}
+
+/* 사이드바 */
+.sidebar nav.sidebar-content {
+	background-color: #292D34;
+}
+
+/* 사이드바 - 사이드바 헤더 */
+.sidebar nav.sidebar-content .sidebar-header {
+	color: #9D9FA4;
+}
+
+/* 사이드바 - 사이드바 바디 링크 */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link {
+	color: #EFEFEF;
+}
+
+/* 사이드바 - 사이드바 바디 링크 (hover, active) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link:hover {
+	background-color: #2E7CFF;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link.active {
+	background-color: #006DF1;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link:hover i,
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link.active i {
+	color: #EFEFEF !important;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li a.sidebar-link:hover:after,
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li a.sidebar-link.active:after,
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group ul.sidebar-item-group a.sidebar-link:hover:before,
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group ul.sidebar-item-group a.sidebar-link.active:before {
+	border-color: #EFEFEF;
+}
+
+/* 사이드바 - 1 Level */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li>a.sidebar-link i {
+	color: #787C82;
+}
+
+/* 사이드바 - 2 Level (서브 메뉴) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li a.sidebar-link:after {
+	border-color: #535961;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li>a.sidebar-link i.fa-angle-up {
+	color: #787C82;
+}
+
+/* 사이드바 - 3 Level (서브 메뉴) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group ul.sidebar-item-group a.sidebar-link:before {
+	border-color: #535961;
+}
+
+/* 사이드바 - 사이드바 푸터 */
+.sidebar nav.sidebar-content .sidebar-footer i {
+	color: #787C82;
+}
+
+/* 콘텐트 래퍼 - 디렉토리 */
+.content-wrapper .page-directory {
+	background-color: #3C414D;
+	border-color: #3C414D;
+	color: #9D9FA4;
+}
+
+.content-wrapper .page-directory span:last-child {
+	color: #EFEFEF;
+}

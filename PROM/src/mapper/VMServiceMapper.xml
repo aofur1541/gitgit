@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.tenant.dao.VMServiceDAO">
+
+	<select id="selectVMServiceList" resultType="VMServiceVO" parameterType="VMServiceVO">
+		select 
+			s.vm_service_ID as vmServiceID,
+			s.vm_service_name as vmServiceName,
+			s.vm_service_sUserID as vmServiceUserID,
+			IFNULL(u.sName,'관리자 미지정') as vmServiceUserName,
+			s.vm_service_datetime as vmServiceDatetime,
+			s.vm_service_INVM as vmServiceINVM,
+			s.nEp_num as nEpNum,
+			s.tenants_id as tenantId,
+			t.name as tenantName,
+			s.default_cluster as defaultCluster,
+			s.default_host as defaultHost,
+			s.default_storage as defaultStorage,
+			IFNULL(hd.dataStoreName,'미지정') as defaultStorageName,
+			s.default_network as defaultNetwork,
+			IFNULL(hn.netWorkName,'미지정') as defaultNetworkName, 
+			s.default_netmask as defaultNetmask,
+			s.default_gateway as defaultGateway,
+			s.dhcp_onoff as dhcpOnoff,
+			s.created_on as createdOn,
+			s.updated_on as updatedOn,
+			s.description,
+			(select count(d.vm_service_ID) from vm_data_info d where s.vm_service_ID = d.vm_service_ID) as countVM
+		from vm_service s
+		left join tenants t on s.tenants_id = t.id
+		left join sdsc_user u on s.vm_service_sUserID = u.id
+		left join hostDataStore hd on s.default_host = hd.hostID and s.default_storage = hd.dataStoreID
+		left join hostNetwork hn on s.default_host = hn.hostID and s.default_network = hn.netWorkID
+		where 1 = 1
+		<if test="vmServiceName != null">
+			and s.vm_service_name = #{vmServiceName}
+		</if>
+		<if test='tenantId != null and tenantId > 0'>
+			and s.tenants_id = #{tenantId}
+		</if>
+	</select>
+	
+	<select id="selectVMServiceListByUserMapping" resultType="VMServiceVO" parameterType="VMServiceVO">
+		select 
+			s.vm_service_ID as vmServiceID,
+			s.vm_service_name as vmServiceName,
+			s.vm_service_sUserID as vmServiceUserID,
+			s.vm_service_datetime as vmServiceDatetime,
+			s.vm_service_INVM as vmServiceINVM,
+			s.nEp_num as nEpNum,
+			s.tenants_id as tenantId,
+			t.name as tenantName,
+			s.default_cluster as defaultCluster,
+			s.default_host as defaultHost,
+			s.default_storage as defaultStorage,
+			s.default_network as defaultNetwork,
+			s.default_netmask as defaultNetmask,
+			s.default_gateway as defaultGateway,
+			s.dhcp_onoff as dhcpOnoff,
+			s.created_on as createdOn,
+			s.updated_on as updatedOn,
+			s.description
+		from vm_service s
+		join tenants t on s.tenants_id = t.id
+		join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		<if test='tenantId != null and tenantId > 0'>
+			and s.tenants_id = #{tenantId}
+		</if>
+		order by s.tenants_id, s.vm_service_ID
+	</select>
+	
+	<select id="selectVMService" resultType="VMServiceVO" parameterType="Integer">
+		select 
+			s.vm_service_ID as vmServiceID,
+			s.vm_service_name as vmServiceName,
+			s.vm_service_sUserID as vmServiceUserID,
+			IFNULL(u.sName,'관리자 미지정') as vmServiceUserName,
+			u.sName as serviceUserName,
+			s.vm_service_datetime as vmServiceDatetime,
+			s.vm_service_INVM as vmServiceINVM,
+			s.nEp_num as nEpNum,
+			s.tenants_id as tenantId,
+			t.name as tenantName,
+			s.default_cluster as defaultCluster,
+			s.default_host as defaultHost,
+			s.default_storage as defaultStorage,
+			IFNULL(hd.dataStoreName,'미지정') as defaultStorageName,
+			s.default_network as defaultNetwork,
+			IFNULL(hn.netWorkName,'미지정') as defaultNetworkName, 
+			s.default_netmask as defaultNetmask,
+			s.default_gateway as defaultGateway,
+			s.dhcp_onoff as dhcpOnoff,
+			s.created_on as createdOn,
+			s.updated_on as updatedOn,
+			s.description,
+			(select count(d.vm_service_ID) from vm_data_info d where s.vm_service_ID = d.vm_service_ID) as countVM
+		from vm_service s
+		left join tenants t on s.tenants_id = t.id
+		left join sdsc_user u on s.vm_service_sUserID = u.id
+		left join hostDataStore hd on s.default_host = hd.hostID and s.default_storage = hd.dataStoreID
+		left join hostNetwork hn on s.default_host = hn.hostID and s.default_network = hn.netWorkID
+		where s.vm_service_ID = #{vmServiceID}
+	</select>
+	
+	<select id="selectVMServiceByVMServiceUserID" resultType="VMServiceVO" parameterType="Integer">
+		select 
+			vm_service_ID as vmServiceID,
+			vm_service_name as vmServiceName,
+			vm_service_sUserID as vmServiceUserID,
+			vm_service_datetime as vmServiceDatetime,
+			vm_service_INVM as vmServiceINVM,
+			nEp_num as nEpNum,
+			tenants_id as tenantId,
+			default_cluster as defaultCluster,
+			default_host as defaultHost,
+			default_storage as defaultStorage,
+			default_network as defaultNetwork,
+			default_netmask as defaultNetmask,
+			default_gateway as defaultGateway,
+			dhcp_onoff as dhcpOnoff,
+			created_on as createdOn,
+			updated_on as updatedOn,
+			description
+		from vm_service
+		where vm_service_sUserID = #{vmServiceUserID}
+		order by vm_service_ID desc
+		limit 1
+	</select>
+	
+	<select id="countVMByVMServiceID" resultType="Integer" parameterType="Integer">
+		select 
+			count(*) 
+		from vm_data_info 
+		where vm_service_ID = #{vmServiceID}
+	</select>
+	
+	<select id="countServiceByTenantId" parameterType="Integer" resultType="Integer">
+		select count(*) 
+		from vm_service
+		where tenants_id = #{tenantId}
+	</select>
+	
+	<select id="countServiceAdmin" resultType="Integer">
+		select count(*) 
+		from vm_service 
+		where vm_service_sUserID = #{vmServiceUserID}
+	</select>
+
+	<insert id="insertVMService" useGeneratedKeys="true" keyProperty="vmServiceID" parameterType="VMServiceVO">
+		insert into vm_service (
+			vm_service_ID,
+			vm_service_name,
+			vm_service_sUserID,
+			vm_service_datetime,
+			vm_service_INVM,
+			nEp_num,
+			tenants_id,
+			default_cluster,
+			default_host,
+			default_storage,
+			default_network,
+			default_gateway,
+			default_netmask,
+			dhcp_onoff,
+			created_on,
+			updated_on,
+			description
+		) values (
+			#{vmServiceID},
+			#{vmServiceName},
+			#{vmServiceUserID},
+			null,
+			0,
+			null,
+			#{tenantId},
+			#{defaultCluster},
+			#{defaultHost},
+			#{defaultStorage},
+			#{defaultNetwork},
+			#{defaultGateway},
+			#{defaultNetmask},
+			#{dhcpOnoff},
+			now(),
+			now(),
+			#{description}
+		)
+	</insert>
+	
+	<update id="updateVMService">
+		update vm_service 
+		set 
+			vm_service_name = #{vmServiceName},
+			vm_service_sUserID = #{vmServiceUserID},
+			tenants_id = #{tenantId},
+			default_cluster = #{defaultCluster},
+			default_host = #{defaultHost},
+			default_storage = #{defaultStorage},
+			default_network = #{defaultNetwork},
+			default_netmask = #{defaultNetmask},
+			default_gateway = #{defaultGateway},
+			dhcp_onoff = #{dhcpOnoff},
+			updated_on = now(),
+			description = #{description}
+		where vm_service_ID = #{vmServiceID}
+	</update>
+	
+	<delete id="deleteVMService">
+		delete from vm_service 
+		where vm_service_ID = #{vmServiceID}
+	</delete>
+	
+</mapper>

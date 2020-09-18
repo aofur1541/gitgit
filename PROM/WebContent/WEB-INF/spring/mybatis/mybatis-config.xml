@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    
+    <typeAliases>
+        <typeAlias alias="CompanyVO" type="com.kdis.PROM.user.vo.CompanyVO"/>
+        <typeAlias alias="DepartmentVO" type="com.kdis.PROM.user.vo.DepartmentVO"/>
+        <typeAlias alias="UserVO" type="com.kdis.PROM.user.vo.UserVO"/>
+        <typeAlias alias="LogVO" type="com.kdis.PROM.log.vo.LogVO"/>
+        <typeAlias alias="VMGeneratingVO" type="com.kdis.PROM.log.vo.VMGeneratingVO"/>
+        <typeAlias alias="VCenterAlertVO" type="com.kdis.PROM.log.vo.VCenterAlertVO"/>
+        <typeAlias alias="UserPWResetVO" type="com.kdis.PROM.approval.vo.UserPWResetVO"/>
+        <typeAlias alias="NoticeVO" type="com.kdis.PROM.support.vo.NoticeVO"/>
+        <typeAlias alias="QuestionVO" type="com.kdis.PROM.support.vo.QuestionVO"/>
+        <typeAlias alias="LicenseVO" type="com.kdis.PROM.support.vo.LicenseVO"/>
+        <typeAlias alias="TenantVO" type="com.kdis.PROM.tenant.vo.TenantVO"/>
+        <typeAlias alias="VMServiceVO" type="com.kdis.PROM.tenant.vo.VMServiceVO"/>
+        <typeAlias alias="VMHostVO" type="com.kdis.PROM.tenant.vo.VMHostVO"/>
+        <typeAlias alias="ClusterVO" type="com.kdis.PROM.tenant.vo.ClusterVO"/>
+        <typeAlias alias="HostDataStoreVO" type="com.kdis.PROM.tenant.vo.HostDataStoreVO"/>
+        <typeAlias alias="HostNetworkVO" type="com.kdis.PROM.tenant.vo.HostNetworkVO"/>
+        <typeAlias alias="VMDataVO" type="com.kdis.PROM.apply.vo.VMDataVO"/>
+        <typeAlias alias="VMCreateVO" type="com.kdis.PROM.apply.vo.VMCreateVO"/>
+        <typeAlias alias="VMDiskVO" type="com.kdis.PROM.apply.vo.VMDiskVO"/>
+        <typeAlias alias="VMNetworkVO" type="com.kdis.PROM.apply.vo.VMNetworkVO"/>
+        <typeAlias alias="VMCDROMVO" type="com.kdis.PROM.apply.vo.VMCDROMVO"/>
+        <typeAlias alias="ApprovalWorkflowVO" type="com.kdis.PROM.apply.vo.ApprovalWorkflowVO"/>
+        <typeAlias alias="FlavorVO" type="com.kdis.PROM.config.vo.FlavorVO"/>
+        <typeAlias alias="ExternalServerVO" type="com.kdis.PROM.config.vo.ExternalServerVO"/>
+        <typeAlias alias="BasicVO" type="com.kdis.PROM.config.vo.BasicVO"/>
+        <typeAlias alias="VMReportVO" type="com.kdis.PROM.report.vo.VMReportVO"/>
+        <typeAlias alias="HostReportVO" type="com.kdis.PROM.report.vo.HostReportVO"/>
+        <typeAlias alias="PerformanceVO" type="com.kdis.PROM.performance.vo.PerformanceVO"/>
+        <typeAlias alias="AgentVO" type="com.kdis.PROM.performance.vo.AgentVO"/>
+        <typeAlias alias="DashboardVO" type="com.kdis.PROM.dash.vo.DashboardVO"/>
+        <typeAlias alias="VMStorageVO" type="com.kdis.PROM.status.vo.VMStorageVO"/>
+        
+        <typeAlias alias="vmDataInfo" type="com.kdis.PROM.logic.Vm_data_info"/>
+        <typeAlias alias="vmCreate" type="com.kdis.PROM.logic.Vm_create"/>
+        <typeAlias alias="vmStorage" type="com.kdis.PROM.logic.Vm_storage"/>
+        <typeAlias alias="hostInfo" type="com.kdis.PROM.logic.Vm_host_info"/>
+        <typeAlias alias="hostDetail" type="com.kdis.PROM.logic.HostDetail"/>
+        <typeAlias alias="service" type="com.kdis.PROM.logic.Vm_service"/>
+        <typeAlias alias="service_graph" type="com.kdis.PROM.logic.Vm_service_graph"/>
+        <typeAlias alias="monitoringJoin" type="com.kdis.PROM.logic.MmonitoringJoin"/>
+        <typeAlias alias="autoScale" type="com.kdis.PROM.logic.AutoScale"/>
+        <typeAlias alias="autoScaleUp" type="com.kdis.PROM.logic.AutoScaleUp"/>
+        <typeAlias alias="manualScale" type="com.kdis.PROM.logic.Manualscale"/>
+        <typeAlias alias="HostDataStore" type="com.kdis.PROM.logic.HostDataStore"/>
+        <typeAlias alias="HostNetwork" type="com.kdis.PROM.logic.HostNetwork"/>
+    </typeAliases>
+
+	<mappers>
+	<package name="com.kdis.PROM.mapper"/>
+	</mappers>
+    <!-- <typeHandlers>
+        <typeHandler handler="org.apache.ibatis.type.SqlDateTypeHandler" javaType="java.sql.Date" jdbcType="DATE"/>
+    </typeHandlers> -->
+
+</configuration>

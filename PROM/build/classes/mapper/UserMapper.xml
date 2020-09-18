@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.user.dao.UserDAO">
+
+	<select id="selectUserList" parameterType="UserVO" resultType="UserVO">
+		select 
+			sdsc_user.id,
+			sdsc_user.sUserID,
+			sdsc_user.sUserPW,
+			sdsc_user.sName,
+			sdsc_user.sCompany,
+			company.name as companyName,
+			sdsc_user.sDepartment,
+			department.name as sDepartmentName,
+			ifnull(department.isUse,0) as isUse,
+			sdsc_user.nApproval,
+			sdsc_user.sNameEng,
+			sdsc_user.nNumber,
+			sdsc_user.sUserIP,
+			sdsc_user.sEp_num as sEpNum,
+			sdsc_user.sCompany,
+			sdsc_user.sEmailAddress,
+			sdsc_user.sPhoneNumber,
+			sdsc_user.last_login_on as lastLoginOn,
+			sdsc_user.passwd_changed_on as passwdChangedOn,
+			sdsc_user.dBirthday,
+			sdsc_user.dStartday,
+			sdsc_user.sJobCode,
+			sdsc_user.sTenureCode
+		from sdsc_user
+			left join company on sdsc_user.sCompany = company.id
+			left join department on sdsc_user.sDepartment = department.dept_id AND department.company_id = company.id
+		where department.isUse = 1 
+		<if test="paramNotApproval != null">
+			and sdsc_user.nApproval != #{paramNotApproval}
+		</if>
+		<if test="paramNotId != null">
+			and sdsc_user.id != #{paramNotId} 
+		</if>
+		<if test="sCompany != null">
+			and sdsc_user.sCompany = #{sCompany}
+		</if>
+		order by sdsc_user.sCompany
+	</select>
+	
+	<select id="selectUser" parameterType="UserVO" resultType="UserVO">
+		SELECT 
+			sdsc_user.id,
+			sdsc_user.sUserID,
+			sdsc_user.sUserPW,
+			sdsc_user.sName,
+			sdsc_user.sCompany,
+			company.name as companyName,
+			sdsc_user.sDepartment,
+			department.name as sDepartmentName,
+			ifnull(department.isUse,0) as isUse,
+			sdsc_user.nApproval,
+			sdsc_user.sNameEng,
+			sdsc_user.nNumber,
+			sdsc_user.sUserIP,
+			sdsc_user.sEp_num as sEpNum,
+			sdsc_user.sCompany,
+			sdsc_user.sEmailAddress,
+			sdsc_user.sPhoneNumber,
+			sdsc_user.last_login_on as lastLoginOn,
+			sdsc_user.passwd_changed_on as passwdChangedOn,
+			sdsc_user.dBirthday,
+			sdsc_user.dStartday,
+			sdsc_user.sJobCode,
+			sdsc_user.sTenureCode
+		FROM sdsc_user
+			LEFT JOIN company ON sdsc_user.sCompany = company.id
+			LEFT JOIN department ON sdsc_user.sDepartment = department.dept_id AND department.company_id = company.id
+		where 1 = 1
+		<if test="id != null">
+		and sdsc_user.id = #{id}
+		</if>
+		<if test="sUserID != null">
+		and sdsc_user.sUserID = #{sUserID}
+		</if>
+	</select>
+	
+	<select id="selectUserTenantMembersList" parameterType="UserVO" resultType="UserVO">
+		select 
+			sdsc_user.id,
+			sdsc_user.sUserID,
+			sdsc_user.sUserPW,
+			sdsc_user.sName,
+			sdsc_user.sCompany,
+			company.name as companyName,
+			sdsc_user.sDepartment,
+			department.name as sDepartmentName,
+			ifnull(department.isUse,0) as isUse,
+			sdsc_user.nApproval,
+			sdsc_user.sNameEng,
+			sdsc_user.nNumber,
+			sdsc_user.sUserIP,
+			sdsc_user.sEp_num as sEpNum,
+			sdsc_user.sCompany,
+			sdsc_user.sEmailAddress,
+			sdsc_user.sPhoneNumber,
+			sdsc_user.last_login_on as lastLoginOn,
+			sdsc_user.passwd_changed_on as passwdChangedOn,
+			sdsc_user.dBirthday,
+			sdsc_user.dStartday,
+			sdsc_user.sJobCode,
+			sdsc_user.sTenureCode
+		from sdsc_user
+			left join company on sdsc_user.sCompany = company.id
+			left join department on sdsc_user.sDepartment = department.dept_id and department.company_id = company.id
+		where sdsc_user.id != #{id}
+			and sdsc_user.id in (
+				select a.user_id 
+				from user_tenant_mapping a
+				where tenant_id in (select b.tenant_id from user_tenant_mapping b where b.user_id = #{id})
+			)
+		order by sdsc_user.id, sdsc_user.sCompany, sdsc_user.sDepartment
+	</select>
+	
+	<select id="selectUserListByDepartmentList" resultType="UserVO">
+		select
+			s.id,
+			s.sUserID,
+			s.sName
+		from sdsc_user s, department d
+		where s.sCompany = d.company_id AND s.sDepartment = d.dept_id
+		and s.sCompany = #{sCompany} 
+		and s.sDepartment IN
+		<foreach collection="paramDeptList" item="dept" open="(" close=")" separator=",">
+			#{dept.deptId} 
+		</foreach>
+		and not s.nApproval = #{paramNotApproval}
+		order by s.sDepartment
+	</select>
+	
+	<select id="selectUserTenantMappingList" parameterType="UserVO" resultType="UserVO">
+		select 
+			u.id,
+			u.sUserID,
+			u.sName,
+			c.name as companyName,
+			d.name as sDepartmentName
+		from sdsc_user u
+			left join company c on c.id = u.sCompany 
+			left join department d on d.company_id = u.sCompany and d.dept_id = u.sDepartment
+			join user_tenant_mapping m on m.user_id = u.id
+		where m.tenant_id = #{nTenantId}
+		and u.nApproval != 99
+		order by u.sCompany, u.sDepartment, u.id
+	</select>
+	
+	<select id="countUserBySUserID" parameterType="String" resultType="Integer">
+		select count(*) 
+		from sdsc_user 
+		where sUserID = #{value}
+	</select>
+	
+	<select id="countUserByNTenantId" parameterType="Integer" resultType="Integer">
+		select count(u.id) 
+		from sdsc_user u
+			join user_tenant_mapping m on m.user_id = u.id
+		where m.tenant_id = #{nTenantId}
+	</select>
+	
+	<select id="countUserByNServiceId" parameterType="Integer" resultType="Integer">
+		select count(*) 
+		from sdsc_user 
+		where nService_id = #{nServiceId}
+	</select>
+	
+	<select id="countUserByDeptId" parameterType="UserVO" resultType="Integer">
+		select count(*) 
+		from sdsc_user
+		where sCompany = #{sCompany}	
+		and sDepartment = #{sDepartment}
+	</select>
+
+	<insert id="insertUser" parameterType="UserVO">
+		insert into sdsc_user (
+			sUserID,
+			sUserPW,
+			sName,
+			sDepartment,
+			nApproval,
+			sNameEng,
+			nNumber,
+			sUserIP,
+			sEp_num,
+			sCompany,
+			sEmailAddress,
+			sPhoneNumber,
+			passwd_changed_on,
+			created_on,
+			dBirthday,
+			dStartday,
+			sJobCode,
+			sTenureCode)
+		values(
+			#{sUserID},
+			#{sUserPW},
+			#{sName},
+			#{sDepartment},
+			#{nApproval},
+			#{sNameEng},
+			#{nNumber},
+			#{sUserIP},
+			#{sEpNum},
+			#{sCompany},
+			#{sEmailAddress},
+			#{sPhoneNumber},
+			now(),
+			now(),
+			#{dBirthday},
+			#{dStartday},
+			#{sJobCode},
+			#{sTenureCode}
+		)
+	</insert>
+	
+	<update id="updateUser" parameterType="UserVO">
+		update sdsc_user 
+		set 
+			sCompany = #{sCompany},  
+			sName = #{sName},
+			sDepartment = #{sDepartment}, 
+			nApproval = #{nApproval}, 
+			sUserIP = #{sUserIP}, 
+			nNumber = #{nNumber}, 
+			sPhoneNumber = #{sPhoneNumber}, 
+			sEmailAddress = #{sEmailAddress}, 
+			updated_on = now(),
+			sNameEng = #{sNameEng},
+			dStartday = #{dStartday},
+			sJobCode = #{sJobCode},
+			sTenureCode = #{sTenureCode}
+		where id = #{id}
+	</update>
+	
+	<update id="updateUserPassword" parameterType="UserVO">
+		update sdsc_user 
+		set 
+			sUserPW = #{sUserPW},
+			passwd_changed_on = now(),
+			updated_on = now()
+		where id = #{id}
+	</update>
+	
+	<update id="updateLastLoginDate" parameterType="int">
+		update sdsc_user 
+		set 
+			last_login_on = now(),
+			updated_on = now()
+		where id = #{id}
+	</update>
+	
+	<update id="updateUserTenant">
+		update sdsc_user 
+		set 
+			nTenant_id = #{nTenantId},
+			nService_id = null,
+			updated_on = now()
+		where id = #{id}
+	</update>
+	
+	<update id="updateUserService">
+		update sdsc_user 
+		set 
+			nTenant_id = #{nTenantId},
+			nService_id = #{nServiceId},
+			updated_on = now()
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteUser">
+		delete from sdsc_user 
+		where id = #{id}
+	</delete>
+	
+	<insert id="insertUserTenantMapping" parameterType="UserVO">
+		insert into user_tenant_mapping (
+			user_id,
+			tenant_id)
+		values(
+			#{id},
+			#{nTenantId}
+		)
+	</insert>
+	
+	<delete id="deleteUserTenantMappingByUserId">
+		delete from user_tenant_mapping 
+		where user_id = #{id}
+	</delete>
+
+	<select id="selectauthUser" parameterType="UserVO" resultType="UserVO">
+		select * from sdsc_user as s
+		where s.sEmailAddress =#{sEmailAddress} 
+		
+	
+	
+	</select>
+
+
+
+
+</mapper>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.tenant.dao.TenantDAO">
+
+	<select id="selectTenantList" resultType="TenantVO" parameterType="TenantVO">
+		select 
+			t.id,
+			t.name,
+			t.admin_id as adminId,
+			s.sName as adminName,
+			t.company_id as companyId,
+			t.dept_id as deptId,
+			t.description,
+			t.default_cluster as defaultCluster,
+			t.default_host as defaultHost,
+			t.default_storage as defaultStorage,
+			ifnull(hd.dataStoreName,'미지정') as defaultStorageName,
+			t.default_network as defaultNetwork,
+			ifnull(hn.netWorkName,'미지정') as defaultNetworkName,
+			t.dhcp_onoff as dhcpOnoff,
+			t.default_netmask as defaultNetmask,
+			t.default_gateway as defaultGateway
+		from tenants t
+			left join sdsc_user s on t.admin_id = s.id
+			left join hostDataStore hd on t.default_host = hd.hostID and t.default_storage = hd.dataStoreID
+			left join hostNetwork hn on t.default_host = hn.hostID and t.default_network = hn.netWorkID
+		where 1 = 1
+		<if test="companyId != null">
+			and t.company_id = #{companyId}
+		</if>
+		<if test="name != null">
+			and t.name = #{name}
+		</if>
+	</select>
+	
+	<select id="selectTenantListByUserMapping" resultType="TenantVO">
+		select 
+			t.id,
+			t.name,
+			t.description,
+			t.default_cluster as defaultCluster,
+			t.default_host as defaultHost,
+			t.default_storage as defaultStorage,
+			t.default_network as defaultNetwork,
+			t.dhcp_onoff as dhcpOnoff
+		from tenants t, user_tenant_mapping m
+		where t.id = m.tenant_id
+		and m.user_id = #{userId}
+	</select>
+	
+	<select id="selectTenantArrangeList" resultType="TenantVO">
+		select 
+			t.id,
+			t.name,
+			t.admin_id as adminId,
+			u.sName as adminName,
+			m.user_id,
+			t.description,
+			t.default_cluster as defaultCluster,
+			t.default_host as defaultHost,
+			t.default_storage as defaultStorage,
+			t.default_network as defaultNetwork,
+			t.dhcp_onoff as dhcpOnoff,
+			t.default_netmask as defaultNetmask,
+			t.default_gateway as defaultGateway,
+			case 
+				when m.user_id is not null then 'true'
+				else 'false'
+			end isInclude,
+			case 
+				when t.admin_id = m.user_id then 'true'
+				else 'false'
+			end isTenantAdmin,
+			case 
+				when(select count(s.vm_service_ID) from vm_service s where s.tenants_id = t.id and s.vm_service_sUserID = m.user_id) > 0 then 'true'
+				else 'false'
+			end isServiceAdmin
+		from tenants t
+			left join sdsc_user u on u.id = t.admin_id
+			left join (select * from user_tenant_mapping where user_id = #{userId}) m on m.tenant_id = t.id
+	</select>
+	
+	<select id="selectTenant" resultType="TenantVO" parameterType="TenantVO">
+		select 
+			t.id,
+			t.name,
+			t.admin_id as adminId,
+			s.sName as adminName,
+			t.company_id as companyId,
+			t.dept_id as deptId,
+			t.description,
+			t.default_cluster as defaultCluster,
+			t.default_host as defaultHost,
+			t.default_storage as defaultStorage,
+			ifnull(hd.dataStoreName,'미지정') as defaultStorageName,
+			t.default_network as defaultNetwork,
+			ifnull(hn.netWorkName,'미지정') as defaultNetworkName,
+			t.dhcp_onoff as dhcpOnoff,
+			t.default_netmask as defaultNetmask,
+			t.default_gateway as defaultGateway
+		from tenants t
+			left join sdsc_user s on t.admin_id = s.id
+			left join hostDataStore hd on t.default_host = hd.hostID and t.default_storage = hd.dataStoreID
+			left join hostNetwork hn on t.default_host = hn.hostID and t.default_network = hn.netWorkID
+		where t.id = #{id}
+	</select>
+	
+	<select id="selectTenantByAdminId" resultType="TenantVO">
+		select 
+			t.id,
+			t.name,
+			t.admin_id as adminId,
+			s.sName as adminName,
+			t.company_id as companyId,
+			t.dept_id as deptId,
+			t.description,
+			t.default_cluster as defaultCluster,
+			t.default_host as defaultHost,
+			t.default_storage as defaultStorage,
+			ifnull(hd.dataStoreName,'미지정') as defaultStorageName,
+			t.default_network as defaultNetwork,
+			ifnull(hn.netWorkName,'미지정') as defaultNetworkName,
+			t.dhcp_onoff as dhcpOnoff,
+			t.default_netmask as defaultNetmask,
+			t.default_gateway as defaultGateway
+		from tenants t
+			left join sdsc_user s on t.admin_id = s.id
+			left join hostDataStore hd on t.default_host = hd.hostID and t.default_storage = hd.dataStoreID
+			left join hostNetwork hn on t.default_host = hn.hostID and t.default_network = hn.netWorkID
+		where t.admin_id = #{adminId}
+		order by id desc
+		limit 1
+	</select>
+	
+	<select id="selectTenantByDeptList" resultType="TenantVO">
+		select 
+			id,
+			name,
+			admin_id as adminId,
+			company_id as companyId,
+			dept_id as deptId,
+			description,
+			default_cluster as defaultCluster,
+			default_host as defaultHost,
+			default_storage as defaultStorage,
+			default_network as defaultNetwork,
+			dhcp_onoff as dhcpOnoff,
+			default_netmask as defaultNetmask,
+			default_gateway as defaultGateway
+		from tenants 
+		where company_id = #{companyId} 
+			and dept_id IN
+			<foreach collection="paramDeptList" item="dt" open="(" close=")" separator=",">
+				#{dt.deptId}
+			</foreach>
+		ORDER BY FIELD(dept_id,
+			<foreach collection="paramDeptList" item="dt" close=")" separator=",">
+			#{dt.deptId}
+			</foreach>
+		limit 1
+	</select>
+	
+	<select id="countTenantByAdminId" parameterType="TenantVO" resultType="Integer">
+		select count(*) 
+		from tenants 
+		where admin_id = #{adminId}
+	</select>
+	
+	<select id="countTenantsByDeptId" parameterType="TenantVO" resultType="int">
+		select count(*) 
+		from tenants
+		where company_id = #{companyId}	
+		and dept_id = #{deptId}
+	</select>
+	
+	<select id="selectClusterList" resultType="ClusterVO">
+		select
+			clusterID,
+			clusterName,
+			clusterParent,
+			drsEnabled,
+			clusterCore,
+			clusterMemory,
+			updated_on as updatedOn
+		from clusterInfo
+		order by clusterID
+	</select>
+	
+	<select id="selectVMHostList" resultType="VMHostVO" parameterType="VMHostVO">
+		select 
+			vm_HID vmHID,
+			vm_Hhostname vmHhostname,
+			vm_Hcpu vmHcpu,
+			vm_Hmemory vmHmemory,
+			vm_Hver_bu vmHverBu,
+			vm_Hvendor vmHvendor,
+			host_model hostModel,
+			vm_HIP vmHIP,
+			vm_HvmCount vmHvmCount,
+			vm_Hpower vmHpower,
+			vm_Huptime vmHuptime,
+			hostParent hostParent,
+			host_cpu_model hostCpuModel,
+			host_thread hostThread
+		from vm_host_info h, clusterInfo c
+		where h.hostParent = c.clusterName
+		<if test="hostParent != null and hostParent != 'clusterAll'">
+			and hostParent = #{hostParent} 
+		</if>
+		<if test="clusterId != null and clusterId != 'clusterAll'">
+			and c.clusterID = #{clusterId} 
+		</if>
+		order by vm_Hhostname
+	</select>
+	
+	<select id="selectHostDataStoreListByHostID" resultType="HostDataStoreVO" parameterType="HostDataStoreVO">
+		select
+			h.hostID,
+			h.dataStoreID,
+			h.dataStoreName,
+			s.st_Allca as stAllca,
+			s.st_Useca as stUseca,
+			s.st_space as stspace
+		from hostDataStore h
+			join vm_storage s on s.st_ID = h.dataStoreID
+		where h.hostID = #{hostID}
+		order by s.st_Allca - s.st_Useca desc;
+	</select>
+	
+	<select id="selectHostNetworkListByHostID" resultType="HostNetworkVO" parameterType="HostNetworkVO">
+		select 
+			hostID,
+			netWorkID,
+			netWorkName
+		from hostNetwork 
+		where hostID = #{hostID}
+	</select>
+	
+	<insert id="insertTenant" useGeneratedKeys="true" keyProperty="id" parameterType="TenantVO">
+		insert into tenants (
+			name,
+			admin_id,
+			description,
+			default_cluster,
+			default_host,
+			default_storage,
+			default_network,
+			default_gateway,
+			default_netmask,
+			dhcp_onoff,
+			created_on,
+			updated_on
+		) values (
+			#{name},
+			#{adminId},
+			#{description},
+			#{defaultCluster},
+			#{defaultHost},
+			#{defaultStorage},
+			#{defaultNetwork},
+			#{defaultGateway},
+			#{defaultNetmask},
+			#{dhcpOnoff},
+			now(),
+			now())
+	</insert>
+	
+	<update id="updateTenant">
+		update tenants 
+		set 
+			name = #{name},
+			admin_id = #{adminId},
+			description = #{description},
+			default_cluster = #{defaultCluster},
+			default_host = #{defaultHost},
+			default_storage = #{defaultStorage},
+			default_network = #{defaultNetwork},
+			dhcp_onoff = #{dhcpOnoff},
+			default_gateway = #{defaultGateway},
+			default_netmask = #{defaultNetmask},
+			updated_on = now() 
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteTenant">
+		delete from tenants 
+		where id = #{id}
+	</delete>
+
+</mapper>

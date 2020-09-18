@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.performance.dao.PerformanceDAO">
+
+	<select id="selectVMResourceStatistics" resultType="PerformanceVO">
+		select 
+			ifnull(sum(vm_cpu), 0) sumCPU, 
+			ifnull(sum(vm_memory), 0) sumMemory, 
+			ifnull(sum(vm_disk), 0) sumDisk,
+			ifnull(count(vm_ID), 0) countVM
+		from vm_data_info d
+			join vm_host_info h on h.vm_Hhostname = d.vm_host
+			join clusterInfo c on c.clusterName = h.hostParent
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>	
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on s.tenants_id = t.id
+		where 1 = 1
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>	
+		 	and d.vm_templet = 'false' 
+		<if test='tenantId == -1 or serviceId == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='clusterId == null and tenantId == null'>
+			<!-- 테넌트 전체 -->
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='tenantId != null and tenantId != -1'>
+			<!-- 테넌트 선택 -->
+			and s.tenants_id = #{tenantId}
+		</if>	
+		<if test='clusterId == null and tenantId != -1 and serviceId == null'>
+			<!-- 서비스 전체 -->
+			and d.vm_service_ID is not null and d.vm_service_ID != 0
+		</if>	
+		<if test='tenantId != -1 and serviceId != null and serviceId != -1'>
+			<!-- 서비스 선택 -->
+			and d.vm_service_ID = #{serviceId}
+		</if>
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterId = #{clusterId}
+		</if>
+		<if test='hostId != null and hostId != "hostAll"'>
+			and h.vm_HID = #{hostId}
+		</if>
+		
+		
+	</select>
+	
+	<select id="selectVMPerformanceStatisticsList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			round(avg(p.cpu), 2) avgCPU,
+			round(avg(p.memory), 2) avgMemory,
+			round(avg(p.disk), 2) avgDisk,
+			round(avg(p.network), 2) avgNetwork,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp
+		from ${targetTable} p
+			join vm_data_info d on d.vm_ID = p.id
+			join vm_host_info h on h.vm_Hhostname = d.vm_host
+			join clusterInfo c on c.clusterName = h.hostParent
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>	
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on s.tenants_id = t.id
+		where 1 = 1
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>
+			and d.vm_templet = 'false' 
+		<if test='period == 0'> 
+			and p.timestamp > date_sub(now(), interval 1 hour) 
+		</if>
+		<if test='period == 1'> 
+			and p.timestamp > date_sub(now(), interval 1 day) 
+		</if>
+		<if test='period == 2'> 
+			and p.timestamp > date_sub(now(), interval 7 day) 
+		</if>
+		<if test='period == 3'> 
+			and p.timestamp > date_sub(now(), interval 1 month) 
+		</if>
+		<if test='period == 4'> 
+			and p.timestamp > date_sub(now(), interval 1 year) 
+		</if>
+		<if test='tenantId == -1 or serviceId == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='clusterId == null and tenantId == null'>
+			<!-- 테넌트 전체 -->
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='tenantId != null and tenantId != -1'>
+			<!-- 테넌트 선택 -->
+			and s.tenants_id = #{tenantId}
+		</if>	
+		<if test='clusterId == null and tenantId != -1 and serviceId == null'>
+			<!-- 서비스 전체 -->
+			and d.vm_service_ID is not null and d.vm_service_ID != 0
+		</if>	
+		<if test='tenantId != -1 and serviceId != null and serviceId != -1'>
+			<!-- 서비스 선택 -->
+			and d.vm_service_ID = #{serviceId}
+		</if>
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterId = #{clusterId}
+		</if>
+		<if test='hostId != null and hostId != "hostAll"'>
+			and h.vm_HID = #{hostId}
+		</if>
+		group by p.timestamp
+	</select>
+	
+	<select id="selectVMPerformanceList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp
+		from ${targetTable} p
+		where id = #{vmID}
+		<if test='period == 0'> 
+			and p.timestamp > date_sub(now(), interval 1 hour) 
+		</if>
+		<if test='period == 1'> 
+			and p.timestamp > date_sub(now(), interval 1 day) 
+		</if>
+		<if test='period == 2'> 
+			and p.timestamp > date_sub(now(), interval 7 day) 
+		</if>
+		<if test='period == 3'> 
+			and p.timestamp > date_sub(now(), interval 1 month) 
+		</if>
+		<if test='period == 4'> 
+			and p.timestamp > date_sub(now(), interval 1 year) 
+		</if>
+		
+	
+	</select>
+	
+	<select id="selectVMPerformanceTotalList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select
+		<if test='vmID != "vmAll"'>
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp
+		</if>
+		<if test='vmID == "vmAll"'>
+			round(avg(p.cpu), 2) cpu,
+			round(avg(p.memory), 2) memory,
+			round(avg(p.disk), 2) disk,
+			round(avg(p.network), 2) network,
+			p.timestamp
+		</if>
+		from ${targetTable} p
+			join vm_data_info d on d.vm_ID = p.id
+			join vm_host_info h on h.vm_Hhostname = d.vm_host
+			join clusterInfo c on c.clusterName = h.hostParent
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>	
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on s.tenants_id = t.id
+		where 1 = 1
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>
+			and d.vm_templet = 'false' 
+			and p.timestamp between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+								and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+		<if test='category == "tenantsChoiceAll" and tenantId == null'>
+			<!-- 테넌트 전체 -->
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='category == "tenantsChoiceAll" and tenantId == -1 or serviceId == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='category == "tenantsChoiceAll" and tenantId != null and tenantId != -1'>
+			<!-- 테넌트 선택 -->
+			and s.tenants_id = #{tenantId}
+		</if>	
+		<if test='category == "tenantsChoiceAll" and tenantId != -1 and serviceId == null'>
+			<!-- 서비스 전체 -->
+			and d.vm_service_ID is not null and d.vm_service_ID != 0
+		</if>	
+		<if test='category == "tenantsChoiceAll" and tenantId != -1 and serviceId != null and serviceId != -1'>
+			<!-- 서비스 선택 -->
+			and d.vm_service_ID = #{serviceId}
+		</if>
+		<if test='category == "clusterChoiceAll" and clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterId = #{clusterId}
+		</if>
+		<if test='category == "clusterChoiceAll" and hostId != null and hostId != "hostAll"'>
+			and h.vm_HID = #{hostId}
+		</if>
+		<if test='vmID != "vmAll"'>
+			and p.id = #{vmID}
+		</if>
+		<if test='vmID == "vmAll"'>
+		group by p.timestamp
+		</if>
+	</select>
+	
+	<select id="selectHostResourceStatistics" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			ifnull(count(h.vm_HID), 0) countHost,
+			ifnull(sum(h.vm_HvmCount), 0) countVM, 
+			ifnull(sum(h.host_thread), 0) sumThread, 
+			ifnull(sum(h.vm_Hcpu), 0) sumCPU, 
+			ifnull(sum(h.vm_Hmemory), 0) sumMemory
+		from vm_host_info h
+			join clusterInfo c on h.hostParent = c.clusterName
+		where 1 = 1
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterID = #{clusterId}
+		</if>
+	</select>
+	
+	<select id="selectHostPerformanceStatisticsList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			round(avg(p.cpu), 2) avgCPU, 
+			round(avg(p.memory), 2) avgMemory, 
+			round(avg(p.disk), 2) avgDisk, 
+			round(avg(p.network), 2) avgNetwork,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp
+		from ${targetTable} p
+			join vm_host_info h on h.vm_HID = p.id
+			join clusterInfo c on c.clusterName = h.hostParent
+		where 1 = 1
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterID = #{clusterId}
+		</if>
+		<if test='period == 0'> 
+			and p.timestamp > date_sub(now(), interval 1 hour) 
+		</if>
+		<if test='period == 1'> 
+			and p.timestamp > date_sub(now(), interval 1 day) 
+		</if>
+		<if test='period == 2'> 
+			and p.timestamp > date_sub(now(), interval 7 day) 
+		</if>
+		<if test='period == 3'> 
+			and p.timestamp > date_sub(now(), interval 1 month) 
+		</if>
+		<if test='period == 4'> 
+			and p.timestamp > date_sub(now(), interval 1 year) 
+		</if>
+		group by p.timestamp
+	</select>
+
+	<select id="selectHostPerformanceList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp
+		from ${targetTable} p
+		where id = #{hostId}
+		<if test='period == 0'> 
+			and p.timestamp > date_sub(now(), interval 1 hour) 
+		</if>
+		<if test='period == 1'> 
+			and p.timestamp > date_sub(now(), interval 1 day) 
+		</if>
+		<if test='period == 2'> 
+			and p.timestamp > date_sub(now(), interval 7 day) 
+		</if>
+		<if test='period == 3'> 
+			and p.timestamp > date_sub(now(), interval 1 month) 
+		</if>
+		<if test='period == 4'> 
+			and p.timestamp > date_sub(now(), interval 1 year) 
+		</if>
+	</select>
+	
+	<select id="selectHostPerformanceTotalList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select
+		<if test='hostId != "hostAll"'>
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+		</if>
+		<if test='hostId == "hostAll"'>
+			round(avg(p.cpu),2) as cpu,
+			round(avg(p.memory),2) as memory,
+			round(avg(p.disk),2) as disk,
+			round(avg(p.network),2) as network,
+		</if>
+			p.timestamp
+		from ${targetTable} p
+			join vm_host_info h on h.vm_HID = p.id
+			join clusterInfo c on c.clusterName = h.hostParent
+		where p.timestamp between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+								and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterId = #{clusterId}
+		</if>
+		<if test='hostId != null and hostId != "hostAll"'>
+			and h.vm_HID = #{hostId}
+		</if>
+		<if test='hostId == "hostAll"'>
+		group by p.timestamp
+		</if>
+	</select>
+	
+	<!-- <select id="selectVMOverResourceList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			d.vm_name vmName,
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp
+		from (
+			select f.*, (f.cpu + f.memory) resource 
+			from perfVMDay f
+			where f.timestamp >= date_add(now(), interval -1 day) 
+				and (f.cpu > #{cpu} or f.memory > #{memory})
+			) p
+			join (
+				select e.id, max(e.cpu+e.memory) maxResource 
+				from perfVMDay e 
+				where e.timestamp >= date_add(now(), interval -1 day) 
+					and (e.cpu > #{cpu} or e.memory > #{memory})
+				group BY e.id	
+			) m on m.id = p.id and m.maxResource = p.resource
+			join vm_data_info d on d.vm_ID = p.id
+			join vm_host_info h on d.vm_host = h.vm_Hhostname
+			join clusterInfo c on h.hostParent = c.clusterName
+			
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>	
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on s.tenants_id = t.id
+		where 1 = 1
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>	
+		 	and d.vm_templet = 'false'
+		<if test='category == "cluster" and clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterID = #{clusterId}
+		</if>
+		<if test='category == "serviceGroup" and tenantId == null'>
+			테넌트 전체
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='category == "serviceGroup" and tenantId == -1 or serviceId == -1'>
+			미배치
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='category == "serviceGroup" and tenantId != null and tenantId != -1'>
+			테넌트 선택
+			and s.tenants_id = #{tenantId}
+		</if>
+	</select>
+	 -->
+	 
+	<select id="selectVMOvercpuList" parameterType="PerformanceVO" resultType="PerformanceVO">
+	
+	SET @rownum:=0;
+	SET @co:=0;
+	
+	SELECT 	sq.vmName,
+						sq.rn,
+						DAY((sq.timestamp)) AS dr,
+						HOUR((sq.timestamp)) AS hr,
+						MINUTE((sq.timestamp)) AS mr,
+						sq.cpu,
+						sq.memory,
+						sq.disk,
+						sq.network,
+						min(sq.timestamp) AS startDate,
+						date_add(MAX(sq.timestamp), INTERVAL +5 MINUTE)  AS endDate,
+						COUNT(*) AS cnt,
+				
+						case when @grp = vmName then @co:=@co+1 
+						else @co:=1 end as co
+						,(@grp:= vmName) as dum
+				
+				FROM
+			
+			
+				(
+				
+				select 
+				d.vm_name vmName,
+				@rownum:=@rownum+5 rn,
+				p.cpu,
+				p.memory,
+				p.disk,
+				p.network,
+				p.timestamp
+			
+				from perfVMDay p
+			
+				join vm_data_info d on d.vm_ID = p.id
+				join vm_host_info h on d.vm_host = h.vm_Hhostname
+				join clusterInfo c on h.hostParent = c.clusterName
+	
+				and p.timestamp >= date_add(now(), interval -1 day) 
+				 
+			
+				 and (p.cpu > #{cpu})
+				
+			
+				
+				) AS sq
+				
+			 	 
+			 	
+				GROUP BY sq.vmName,dr*60*24+60*hr+mr-rn
+				ORDER BY sq.vmName,co desc;
+				
+ 
+	
+	</select>
+	
+	 
+	 
+	
+	<select id="selectVMOvermemoryList" parameterType="PerformanceVO" resultType="PerformanceVO">
+	
+		SET @rownum:=0;
+	SET @co:=0;
+	
+	SELECT 	sq.vmName,
+						sq.rn,
+						DAY((sq.timestamp)) AS dr,
+						HOUR((sq.timestamp)) AS hr,
+						MINUTE((sq.timestamp)) AS mr,
+						sq.cpu,
+						sq.memory,
+						sq.disk,
+						sq.network,
+						min(sq.timestamp) AS startDate,
+						date_add(MAX(sq.timestamp), INTERVAL +5 MINUTE)  AS endDate,
+						COUNT(*) AS cnt,
+				
+						case when @grp = vmName then @co:=@co+1 
+						else @co:=1 end as co
+						,(@grp:= vmName) as dum
+				
+				FROM
+			
+			
+				(
+				
+				select 
+				d.vm_name vmName,
+				@rownum:=@rownum+5 rn,
+				p.cpu,
+				p.memory,
+				p.disk,
+				p.network,
+				p.timestamp
+			
+				from perfVMDay p
+			
+				join vm_data_info d on d.vm_ID = p.id
+				join vm_host_info h on d.vm_host = h.vm_Hhostname
+				join clusterInfo c on h.hostParent = c.clusterName
+	
+				and p.timestamp >= date_add(now(), interval -1 day) 
+				 
+			
+				 and (p.memory > #{memory})
+				
+			
+				
+				) AS sq
+				
+			 	 
+			 	
+				GROUP BY sq.vmName,dr*60*24+60*hr+mr-rn
+				ORDER BY sq.vmName,co desc;
+				
+ 
+	
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="selectAgentOSList" resultType="AgentVO">
+		select
+			 id,
+			 name,
+			 resourceId
+		from agentsParentOS 
+		order by name
+	</select>
+	
+	<select id="selectAgentPerformanceList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select
+			p.id,
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp
+		from perfVMOpsAgent p
+		where p.timestamp between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+			and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+		and p.id = #{resourceId}
+	</select>
+	
+	<select id="selectPerformanceRankListByServiceId" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp,
+			d.vm_name vmName,
+			s.vm_service_name serviceName
+		from perfVMRealtime p
+			join vm_data_info d on d.vm_ID = p.id
+			join vm_service s on s.vm_service_ID = d.vm_service_ID
+		where p.timestamp = (select date_sub(max(perfVMRealtime.timestamp),interval 60 second) from perfVMRealtime) 
+			and s.vm_service_ID = #{serviceId} 
+		<if test='order == "cpu"'>	
+		order by p.cpu 
+		</if>
+		<if test='order == "memory"'>	
+		order by p.memory 
+		</if>
+		<if test='order == "disk"'>	
+		order by p.disk 
+		</if>
+		<if test='order == "network"'>	
+		order by p.network 
+		</if>
+		limit 5 
+	</select>
+	<select id="selectPNICPerformanceList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		SELECT hostName,adaptersName,TIMESTAMP, pnicKBytesRx,pnicKBytesTx,speedMB FROM Physical_adapters AS phy
+		JOIN vm_host_info as vmh ON vmh.vm_Hhostname  = phy.hostName
+		WHERE phy.timestamp > date_sub(now(), interval 1 HOUR) AND vmh.vm_HID=#{hostId} AND phy.adaptersName=#{adaptersName}
+	</select>
+</mapper>

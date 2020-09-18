@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.config.dao.FlavorDAO">
+
+	<select id="selectFlavorList" parameterType="FlavorVO" resultType="FlavorVO">
+		select
+			 id,
+			 name,
+			 vCPU,
+			 memory,
+			 disk,
+			 description,
+			 created_on createdOn,
+			 updated_on updatedOn
+		from flavor 
+		where 1 = 1
+		<if test="name != null">
+			and name = #{name}
+		</if>
+		order by field(name,'Custom')
+	</select>
+	
+	<select id="selectFlavorById" parameterType="Integer" resultType="FlavorVO">
+		select
+			 id,
+			 name,
+			 vCPU,
+			 memory,
+			 disk,
+			 description,
+			 created_on createdOn,
+			 updated_on updatedOn
+		from flavor 
+		where id = #{id}
+	</select>
+	
+	<insert id="insertFlavor" parameterType="FlavorVO">
+		insert into flavor (
+			id,
+			name,
+			vCPU,
+			memory,
+			disk,
+			description,
+			created_on,
+			updated_on
+		) values (
+			#{id},
+			#{name},
+			#{vCPU},
+			#{memory},
+			#{disk},
+			#{description},
+			now(),
+			now()
+		)
+	</insert>
+	
+	<update id="updateFlavor" parameterType="FlavorVO">
+		update flavor 
+		set 
+			name = #{name},
+			vCPU = #{vCPU},
+			memory = #{memory},
+			description =#{description},
+			updated_on = now()
+		where id = #{id}
+	</update>
+
+	<delete id="deleteFlavor"  parameterType="Integer">
+		delete from flavor 
+		where id = #{id}
+	</delete>
+
+</mapper>

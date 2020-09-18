@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    <!-- Root Context: defines shared resources visible to all other web components -->
+    <!-- jdbc:mariadb://poc-portal-web.dongwon.com:3306/kdis_portal -->
+    <!-- jdbc:mariadb://portal.kdis.co.kr:3306/kdis_portal -->
+    
+	<jee:jndi-lookup id="dbDataSource"
+                     jndi-name="jdbc/prom"
+                     expected-type="javax.sql.DataSource" />
+
+	<!--  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.gmail.com" />
+    <property name="port" value="587" />
+    <property name="username" value="qnfrdmsqh4@gmail.com" />
+    <property name="password" value="wngksdl@12" />
+    <property name="javaMailProperties">
+    <props>
+      <prop key="mail.smtp.auth">true</prop>
+      <prop key="mail.smtp.starttls.enable">true</prop>
+    </props>
+    </property>
+  </bean> -->
+
+ 
+ 
+
+   	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dbDataSource"/>
+    	<property name="configLocation" value="/WEB-INF/spring/mybatis/mybatis-config.xml"/>
+    	<property name="mapperLocations" value="classpath:mapper/**/*Mapper.xml"/>     
+    </bean>
+    
+    <mybatis-spring:scan base-package="com.kdis.PROM.status.dao, com.kdis.PROM.user.dao, com.kdis.PROM.log.dao, 
+    	com.kdis.PROM.apply.dao, com.kdis.PROM.approval.dao, com.kdis.PROM.support.dao, com.kdis.PROM.tenant.dao, 
+    	com.kdis.PROM.config.dao, com.kdis.PROM.report.dao, com.kdis.PROM.performance.dao, 
+    	com.kdis.PROM.dash.dao"/> 
+          
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSession"></constructor-arg>    
+    </bean>
+
+
+    <context:component-scan base-package="com.kdis.PROM"></context:component-scan>
+
+	<bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 최대업로드 가능한 바이트크기 (50MB)-->
+         <property name="maxUploadSize" value="52428800" />
+		<!-- defaultEncoding -->
+         <property name="defaultEncoding" value="utf-8" />
+    </bean>
+</beans>

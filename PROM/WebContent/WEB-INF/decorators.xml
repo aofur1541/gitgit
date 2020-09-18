@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<decorators defaultdir="/decorator">
+  <decorator name="main" page="deco.jsp">
+     <pattern>*.do</pattern>
+  </decorator>
+  
+  <decorator name="dataPage" page="dataDeco.jsp">
+  <pattern>/data/*.do</pattern>
+  </decorator>
+  
+  <!-- layout 설정을 제외 함. -->
+  <excludes>
+  <pattern>/common/alert.do</pattern>
+  </excludes>
+</decorators>

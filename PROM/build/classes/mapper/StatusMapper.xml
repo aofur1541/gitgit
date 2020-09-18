@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.status.dao.StatusDAO">
+
+	<select id="selectVMHostList" parameterType="VMHostVO" resultType="VMHostVO">
+		select
+			h.vm_HID vmHID,
+			h.vm_Hhostname vmHhostname,
+			h.vm_Hcpu vmHcpu,
+			h.vm_Hmemory vmHmemory,
+			h.vm_Hver_bu vmHverBu,
+			vm_Hvendor vmHvendor,
+			h.host_model hostModel,
+			h.vm_HIP vmHIP,
+			h.vm_HvmCount vmHvmCount,
+			h.vm_Hpower vmHpower,
+			h.vm_Huptime vmHuptime,
+			h.hostParent hostParent,
+			h.host_cpu_model hostCpuModel,
+			h.host_thread hostThread,
+			ifnull(p.cpu,0) AS sumCPU,
+			ifnull(p.memory,0) AS sumMemory
+		from vm_host_info h
+			join clusterInfo AS c on c.clusterName = h.hostParent
+			left join perfHostRealtime p on h.vm_HID = p.id
+		where p.timestamp = (
+			select
+				date_sub(max(perfHostRealtime.timestamp), interval 60 second)
+			from perfHostRealtime)
+		<if test="clusterId != null and clusterId != 'clusterAll'">
+			and c.clusterID = #{clusterId}
+		</if>
+		order by h.vm_Hhostname
+	</select>
+	
+	<select id="selectVMHost" resultType="VMHostVO">
+		select 
+			vm_HID vmHID,
+			vm_Hhostname vmHhostname,
+			vm_Hcpu vmHcpu,
+			vm_Hmemory vmHmemory,
+			vm_Hver_bu vmHverBu,
+			vm_Hvendor vmHvendor,
+			host_model hostModel,
+			vm_HIP vmHIP,
+			vm_HvmCount vmHvmCount,
+			vm_Hpower vmHpower,
+			vm_Huptime vmHuptime,
+			hostParent hostParent,
+			host_cpu_model hostCpuModel,
+			host_thread hostThread,
+			(select sum(vm_cpu) from vm_data_info where vm_data_info.vm_host = vm_host_info.vm_Hhostname ) sumCPU,
+			(select sum(vm_memory) from vm_data_info where vm_data_info.vm_host = vm_host_info.vm_Hhostname ) sumMemory
+		FROM vm_host_info
+		where vm_HID = #{vmHID}
+	</select>
+	
+	<select id="selectPublicDatastoreList" resultType="VMStorageVO">
+		select
+			st_ID stID,
+			st_name stName,
+			st_Allca stAllca,
+			st_Useca stUseca,
+			st_space stSpace,
+			st_datetime stDatetime
+		from vm_storage
+		where st_name not like '%local%'
+		order by st_space desc
+	</select>
+	
+	<select id="selectLocalDatastoreList" resultType="VMStorageVO">
+		select
+			st_ID stID,
+			st_name stName,
+			st_Allca stAllca,
+			st_Useca stUseca,
+			st_space stSpace,
+			st_datetime stDatetime
+		from vm_storage
+		where st_name like '%local%'
+		order by st_space desc
+	</select>
+
+</mapper>

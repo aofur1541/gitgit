@@ -1,0 +1,147 @@
+@charset "utf-8";
+
+/* 미터링  */
+
+#ServiceInVMs::-webkit-scrollbar {
+	display: none;
+}
+
+.meteringday {
+	min-height: 755px;
+}
+
+.servicesVM-table {
+	width: 100%;
+	table-layout: fixed;
+	color: white;
+	text-align: center;
+}
+
+.servicesVM-header {
+	background-color: #252B39;
+	margin-top: 20px;
+}
+
+.servicesVM-content {
+	max-height: 420px;
+	overflow-x: auto;
+	margin-top: 0px;
+	border: 2px solid #252B39;
+}
+
+.servicesVM-table th {
+	padding: .75em .75em;
+}
+
+.servicesVM-content>.servicesVM-table tr:hover {
+	background-color: #3E495F;
+	transition: 0.5s;
+}
+
+.servicesVM-table td {
+	padding: .75em;
+	vertical-align: middle;
+	border-bottom: solid 1px #3E495F;
+}
+
+/* ���͸� ��Ʈ */
+.meteringchart {
+	min-height: 755px;
+}
+
+.chartup>li>button {
+	color: lightgray;
+	text-decoration: none;
+	display: block;
+	background: none;
+	border: none;
+}
+
+.chartup>li:hover>button,
+.chartup>li:focus>button,
+.chartup>li:active>button,
+.chartup>li.active>button {
+	color: #4FC3F7;
+}
+
+.servicesdetail {
+	border: solid 2px #252B39;
+}
+
+.servicesdetail>a>.card-header:hover {
+	background-color: #3E495F;
+	border-radius: .25em;
+	transition: 0.3s;
+	cursor: pointer;
+}
+
+.servicesdetail-table {
+	width: 100%;
+	table-layout: fixed;
+	color: white;
+	text-align: center;
+}
+
+.servicesdetail-header {
+	background-color: #252B39;
+	margin-top: 20px;
+}
+
+.servicesdetail-content {
+	max-height: 200px;
+	overflow-x: auto;
+	margin-top: 0px;
+}
+
+.servicesdetail-table th {
+	padding: 1em 1em;
+}
+
+.servicesdetail-table td {
+	padding: 0.5em;
+	vertical-align: middle;
+	border-bottom: solid 1px #3E495F;
+}
+
+.detailCardinfor {
+	height: 655px;
+	overflow: auto;
+}
+
+.servicenav>li {
+	border-radius: .5em;
+	border: 2px solid #252B39;
+	padding: .25em .25em;
+	transition: 0.3s;
+}
+
+.servicenav>li:hover {
+	background-color: #3E495F;
+	transition: 0.3s;
+}
+
+.servicenav>li>a:hover {
+	color: #fff;
+	transition: 0.1s;
+}
+
+.servicenav>li>a {
+	transition: 0.1s;
+	color: #fff;
+}
+
+.vmname {
+	display: block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.metericon {
+	height: 60px;
+	width: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 5em;
+}

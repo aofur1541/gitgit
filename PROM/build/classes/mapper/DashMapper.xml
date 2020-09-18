@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.dash.dao.DashboardDAO">
+
+	<!-- 
+	****************************************
+	*
+	* 클러스터, 호스트 ,가상머신, 템플릿, 테넌트 , 서비스 ,부서 ,사용자 (개체수)
+	*
+	*	어드민으로 접속시, user로 접속시 권한 체크 (대쉬보드)
+ 	*
+	*****************************************
+	-->
+	<select id="selectAllCountList" resultType="hashmap">
+		SELECT cluster.cluAll, host.hostAll, ten.tenAll,service.serviceAll,template.templateAll,vm.vmAll,dept.deptAll,user.userAll
+			FROM
+			           ( select count(*) cluAll from clusterInfo) cluster
+			        ,  ( select count(*) hostAll from vm_host_info) host
+			        ,  ( select count(*) tenAll from tenants) ten
+			        ,  ( select count(*) serviceAll from vm_service) service
+			        ,  ( select count(*) templateAll from vm_data_info where vm_templet = 'true') template
+			        ,  ( select count(*) vmAll from vm_data_info where vm_templet = 'false') vm
+			        ,  ( select count(*) deptAll from department where isUse = 1) dept
+			        ,  ( select count(*) userAll from sdsc_user JOIN department ON sdsc_user.sDepartment = department.dept_id AND sdsc_user.sCompany = department.company_id  where department.isUse = 1) user
+	</select>
+	
+	<select id="selectAllApprovalCheckcnt" resultType="hashmap">
+		SELECT approvalCreate.createCnt, approvalUpdate.updateCnt, approvalReturn.returnCnt
+		     FROM
+		           ( select count(*) createCnt from vm_create where vm_create.cr_sorting = 1 and cr_approval not in(5,7,8)) approvalCreate
+		        ,  ( select count(*) updateCnt from vm_create where vm_create.cr_sorting = 2 and cr_approval not in(5,7,8)) approvalUpdate
+		        ,  ( select count(*) returnCnt from vm_create where vm_create.cr_sorting = 3 and cr_approval not in(5,7,8)) approvalReturn
+	</select>
+
+	<!-- 
+	*****************************************
+	*	
+	*	가상머신 현황, 물리 자원 현황 (전체)
+	*
+	*****************************************
+	-->
+	
+	<select id="selectAllResourceVMs" parameterType="DashboardVO" resultType="hashmap">
+		SELECT SUM(d.vm_cpu) AS sumCPU, SUM(d.vm_memory) AS sumMemory, SUM(d.vm_disk) AS sumDisk
+		FROM vm_data_info AS d
+		JOIN vm_host_info AS h ON d.vm_host = h.vm_Hhostname
+		JOIN clusterInfo AS c ON h.hostParent = c.clusterName
+		WHERE d.vm_templet = 'false' 
+	
+		<if test="clusterId != null">
+			AND c.clusterID = #{clusterId}
+		</if>
+	</select>
+
+	<select id="selectAllResourcePhysics" parameterType="DashboardVO" resultType="hashmap">
+		SELECT `storage`.*, host.*
+		     FROM
+		           ( select sum(st_Allca) `all`,sum(st_Useca) `use`,sum(st_space) `space` from vm_storage WHERE st_name not LIKE '%local%') `storage`
+		        ,  ( select sum(h.vm_Hcpu) sumCPU,sum(h.vm_Hmemory) sumMemory from vm_host_info as h JOIN clusterInfo as c ON h.hostParent = c.clusterName 
+		<if test="clusterId != null"> WHERE c.clusterID = #{clusterId} </if> ) host
+	</select>
+		
+	<!-- 
+	*****************************************
+	*	
+	*	가상머신 현황, 물리 자원 현황 (클러스터별)
+	*
+	*****************************************
+	-->	
+	
+
+
+
+
+	<!-- 
+	*****************************************
+	* 	
+	*	호스트현황, 데이터 스토어 현황, 가상머신 현황 
+	*				( 원형 그래프 )
+	*
+	*****************************************
+	-->
+	
+	<select id="selectVMState" parameterType="DashboardVO" resultType="hashmap">
+		SELECT 
+			COUNT(CASE WHEN d.vm_status = 'poweredOn' AND d.vm_templet = 'false' THEN 1 END) AS vmPowerOn,
+			COUNT(CASE WHEN d.vm_status = 'poweredOff' AND d.vm_templet = 'false' THEN 1 END) AS vmPowerOff,
+			COUNT(CASE WHEN d.vm_templet = 'true' THEN 1 END) as vmTemplate
+		FROM vm_data_info as d 
+			JOIN vm_host_info as h ON d.vm_host = h.vm_Hhostname
+			JOIN clusterInfo as c ON h.hostParent = c.clusterName
+		<if test="clusterId != null">
+			WHERE c.clusterID = #{clusterId}
+		</if>
+	</select>
+
+	<select id="selectHostsState" parameterType="DashboardVO" resultType="hashmap">
+		SELECT 
+			COUNT(CASE WHEN h.vm_Hpower='connected' THEN 1 END) AS powerOn, 
+			COUNT(CASE WHEN h.vm_Hpower='notResponding' THEN 1 END) AS powerOff,
+			COUNT(*) as allCtn
+		FROM vm_host_info as h 
+		JOIN clusterInfo as c 
+		ON h.hostParent = c.clusterName
+		<if test="clusterId != null">
+			WHERE c.clusterID = #{clusterId}
+		</if>
+	</select>
+	
+	<select id="selectDataStoreState" parameterType="DashboardVO" resultType="VMStorageVO">
+		select
+			s.st_ID stID,
+			s.st_name stName,
+			s.st_Allca stAllca,
+			s.st_Useca stUseca,
+			s.st_space stSpace,
+			s.st_datetime stDatetime
+		from vm_host_info h
+			join hostDataStore hds on hds.hostID = h.vm_Hhostname
+			join vm_storage s on s.st_ID = hds.dataStoreID
+			join clusterInfo c on c.clusterName = h.hostParent
+		where s.st_name not LIKE '%local%'
+		<if test="clusterId != null">
+			and c.clusterID = #{clusterId}
+		</if>
+	</select>
+	
+	<select id="selectTimestampdiffVMAndHost" resultType="Integer">
+		select 
+			timestampdiff(second, max(perfHostRealtime.timestamp),(select max(perfVMRealtime.timestamp) from perfVMRealtime)) 
+		from perfHostRealtime
+	</select>
+	
+	<select id="selectHostPerformanceTop5List" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp,
+			h.vm_Hhostname hostName
+		from perfHostRealtime p
+			JOIN vm_host_info h on h.vm_HID = p.id
+			JOIN clusterInfo c on h.hostParent = c.clusterName
+		<if test="calc != null">
+		where p.`timestamp` = (select date_sub(max(perfHostRealtime.timestamp),interval 60+#{calc} second) from perfHostRealtime)
+		</if>
+		<if test="calc == null">
+		where p.`timestamp` = (select date_sub(max(perfHostRealtime.timestamp),interval 60 second) from perfHostRealtime)
+		</if>
+		<if test="clusterId != null">
+			and c.clusterID = #{clusterId}
+		</if>
+		order by ${order} desc 
+		limit 5 
+	</select>
+	
+	<select id="selectVMPerformanceTop5List" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			p.cpu,
+			p.memory,
+			p.disk,
+			p.network,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp,
+			d.vm_name vmName
+		from perfVMRealtime p
+			join vm_data_info d on d.vm_ID = p.id
+			join vm_host_info h on d.vm_host = h.vm_Hhostname
+			join clusterInfo c on h.hostParent = c.clusterName
+		<if test="calc != null">
+		where p.`timestamp` = (select date_sub(max(perfVMRealtime.timestamp),interval 60+#{calc} second) from perfVMRealtime) 
+		</if>
+		<if test="calc == null">
+		where p.`timestamp` = (select date_sub(max(perfVMRealtime.timestamp),interval 60 second) from perfVMRealtime)
+		</if>
+		<if test="clusterId != null">
+			and c.clusterID = #{clusterId}
+		</if>
+		order by ${order} desc 
+		limit 5
+	</select>
+	
+	
+	<!-- 
+	**********************************************************
+	* 	
+	*	클러스터 별 사용량 (메모리, cpu)
+	*
+	**********************************************************
+	-->
+	<select id="selectClusterAveragePerformanceList" parameterType="PerformanceVO" resultType="PerformanceVO">
+		select 
+			round(avg(p.cpu),1) avgCPU,
+			round(avg(p.memory),1) avgMemory,
+			p.timestamp,
+			date_format(p.timestamp, '%Y-%m-%d %H:%i:%s') dispTimestamp
+		from perfHostRealtime p
+			join vm_host_info h on p.id = h.vm_HID
+			join clusterInfo c on h.hostParent = c.clusterName
+		where p.timestamp > date_sub(now(), interval 10 minute)
+		<if test="clusterId != null">
+			and c.clusterID = #{clusterId}
+		</if>
+	</select>
+
+	<select id="selectUserTenantStatus" resultType="DashboardVO">
+		select 
+			(
+				select 
+					count(m.tenant_id) 
+				from user_tenant_mapping m 
+				where m.user_id = #{userId}
+			) tenantCount,
+			(
+				select 
+					count(s.vm_service_ID) 
+				from user_tenant_mapping m, vm_service s   
+				where m.tenant_id = s.tenants_id and m.user_id = #{userId}
+			) serviceCount,
+			(
+				select 
+					count(d.vm_ID) 
+				from user_tenant_mapping m, vm_service s, vm_data_info d  
+				where m.tenant_id = s.tenants_id and s.vm_service_ID = d.vm_service_ID and m.user_id = #{userId} and d.vm_status = 'poweredOn'
+			) vmOnCount,
+			(
+				select 
+					count(d.vm_ID) 
+				from user_tenant_mapping m, vm_service s, vm_data_info d  
+				where m.tenant_id = s.tenants_id and s.vm_service_ID = d.vm_service_ID and m.user_id = #{userId} and d.vm_status = 'poweredOff'
+			) vmOffCount,
+			(
+				select 
+					sum(d.vm_cpu) 
+				from user_tenant_mapping m, vm_service s, vm_data_info d  
+				where m.tenant_id = s.tenants_id and s.vm_service_ID = d.vm_service_ID and m.user_id = #{userId}
+			) cpuTotal,
+			(
+				select 
+					sum(d.vm_memory) 
+				from user_tenant_mapping m, vm_service s, vm_data_info d  
+				where m.tenant_id = s.tenants_id and s.vm_service_ID = d.vm_service_ID and m.user_id = #{userId}
+			) memoryTotal
+		from dual
+	</select>
+	
+	<select id="selectServiceStatus" resultType="DashboardVO">
+		select
+			(
+				select 
+					count(d.vm_ID) 
+				from vm_service s, vm_data_info d  
+				where s.vm_service_ID = d.vm_service_ID and s.vm_service_ID = #{serviceId} and d.vm_status = 'poweredOn'
+			) vmOnCount,
+			(
+				select 
+					count(d.vm_ID) 
+				from vm_service s, vm_data_info d  
+				where s.vm_service_ID = d.vm_service_ID and s.vm_service_ID = #{serviceId}
+			) vmCount,
+			(
+				select 
+					sum(d.vm_cpu) 
+				from vm_service s, vm_data_info d  
+				where s.vm_service_ID = d.vm_service_ID and s.vm_service_ID = #{serviceId}
+			) cpuTotal,
+			(
+				select 
+					sum(d.vm_memory) 
+				from vm_service s, vm_data_info d  
+				where s.vm_service_ID = d.vm_service_ID and s.vm_service_ID = #{serviceId}
+			) memoryTotal
+		from dual
+	</select>
+	<update id="updateWidgetCustomization">
+		UPDATE sdsc_user SET integrateWidgetList = #{integrateWidget} WHERE sUserID = #{getsUserID}
+	</update>
+	
+	<update id="updateWidgetIdCustomization">
+		UPDATE sdsc_user SET clusterWidgetListId = #{clusterWidget} WHERE sUserID = #{getsUserID}
+	</update>
+	
+	<update id="updateIntegrateWidgetOrderCustomization">
+		UPDATE sdsc_user SET integrateWidgetOrder = #{strIntegrateWidgetOrder} WHERE sUserID = #{getsUserID}
+	</update>
+	
+	<update id="updateClusterWidgetOrderCustomization">
+		UPDATE sdsc_user SET clusterWidgetOrder = #{strClusterWidgetOrder} WHERE sUserID = #{getsUserID}
+	</update>
+	
+	<select id="selectWidgetList" resultType="DashboardVO">
+		SELECT integrateWidgetList, clusterWidgetListId FROM sdsc_user WHERE sUserID = #{getsUserID}
+	</select>
+	
+	<select id="selectWidgetOrderList" resultType="DashboardVO">
+		SELECT integrateWidgetOrder, clusterWidgetOrder FROM sdsc_user WHERE sUserID = #{getsUserID}
+	</select>
+	
+	<select id="getNSXTClusterList" resultType="DashboardVO">
+		SELECT * FROM nsxt_MGMT_Cluster WHERE status != 0
+	</select>
+</mapper>

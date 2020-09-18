@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.config.dao.ExternalServerDAO">
+
+	<select id="selectExternalServerList" parameterType="ExternalServerVO" resultType="ExternalServerVO">
+		select  
+			 id,
+			 name,
+			 serverType,
+			 connectString,
+			 account,
+			 password,
+			 port,
+			 `sSL` `ssl`,
+			 isUse,
+			 status,
+			 description
+		from externalServer
+		where 1 = 1
+		<if test='serverType != null'>
+			and serverType = #{serverType}
+		</if>
+	</select>
+	
+	<select id="selectExternalServer" parameterType="ExternalServerVO" resultType="ExternalServerVO">
+		select  
+			 id,
+			 name,
+			 serverType,
+			 connectString,
+			 account,
+			 password,
+			 port,
+			 `sSL` `ssl`,
+			 isUse,
+			 status,
+			 description
+		from externalServer
+		where id = #{id}
+	</select>
+	
+	<select id="selectExternalServerByServerType" resultType="ExternalServerVO">
+		select  
+			 id,
+			 name,
+			 serverType,
+			 connectString,
+			 account,
+			 password,
+			 port,
+			 `sSL` `ssl`,
+			 isUse,
+			 status,
+			 description
+		from externalServer
+		where serverType = #{serverType}
+		order by id desc
+		limit 1
+	</select>
+	
+	<insert id="insertExternalServer" parameterType="ExternalServerVO">
+		insert into externalServer (
+			id,
+			name,
+			serverType,
+			connectString,
+			account,
+			password,
+			port,
+			`sSL`,
+			isUse,
+			status,
+			description
+		) values (
+			#{id},
+			#{name},
+			#{serverType},
+			#{connectString},
+			#{account},
+			#{password},
+			#{port},
+			#{ssl},
+			#{isUse},
+			#{status},
+			#{description}
+		)
+	</insert>
+	
+	
+	<update id="updateExternalServer" parameterType="ExternalServerVO">
+		update externalServer 
+		set 
+			name = #{name},
+			serverType = #{serverType},
+			connectString = #{connectString},
+			account = #{account},
+			password = #{password},
+			description = #{description},
+			isUse = #{isUse},
+			`sSL` = #{ssl},
+			port = #{port} 
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteExternalServer">
+		delete from externalServer 
+		where id = #{id}
+	</delete>
+
+</mapper>

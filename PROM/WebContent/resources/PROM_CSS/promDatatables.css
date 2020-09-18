@@ -1,0 +1,496 @@
+@charset "utf-8";
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 기본 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+.border-bottom-light {
+	border-bottom: 2px solid #1d2026;
+}
+
+.border-bottom-dark {
+	border-bottom: 2px solid #17191e;
+}
+
+.selectedTr {
+	color: #00baf2;
+	background-color: #2e333a;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 기본 데이터테이블 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+/* datatables div 기본 설정 */
+
+.datatables-header {
+	padding: 0.9375rem;
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 2px solid #17191e;
+}
+
+.datatables-body {
+	width: 100%;
+	overflow: auto;
+}
+
+.datatables-footer {
+	padding: 0.9375rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 2px solid #1d2026;
+}
+
+@media (max-width: 576px) {
+	.datatables-header .row-padding-0:last-child button span.ml-2 {
+		margin: 0 !important;
+		font-size: 0;
+	}
+}
+
+/* prom table 기본 설정 */
+
+table.dataTable.promTable thead th,
+table.dataTable.promTable thead td {
+	padding: 10px 15px;
+}
+
+table.promTable thead th,
+table.promTable thead td {
+	padding: 10px 15px;
+}
+
+table.promTable thead th {
+	background-color: #1d2026;
+	border-right: 1px solid #17191e;
+	border-bottom: 2px solid #17191e;
+	font-weight: normal;
+}
+
+table.promTable thead th:last-child {
+	border-right: none;
+}
+
+table.dataTable.promTable tbody th,
+table.dataTable.promTable tbody td {
+	padding: 8px 15px;
+}
+
+table.promTable tbody th,
+table.promTable tbody td {
+	padding: 8px 15px;
+}
+
+table.promTable tbody td {
+	border-bottom: 1px solid #1d2026;
+	border-right: 1px solid #1d2026;
+}
+
+table.promTable tbody tr:last-child>td {
+	border-bottom: none;
+}
+
+table.promTable tbody td:last-child {
+	border-right: none;
+}
+
+table.promTable.hover tbody tr:hover {
+	background-color: #2e333a;
+}
+
+table.promTable.cpointer tbody tr td {
+	cursor: pointer;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 1
+ *
+ * 타이틀이 있음
+ *
+ * ---------------------------------------------------------------------------- */
+.table-type-1 .table-title-dark {
+	padding: 0.9375rem;
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 2px solid #17191e;
+	align-items: center;
+}
+
+.table-type-1 .table-title-light {
+	padding: 0.9375rem;
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 2px solid #1d2026;
+	align-items: center;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 2
+ *
+ * 데이터테이블이 아님
+ *
+ * ---------------------------------------------------------------------------- */
+
+.table-type-2 table.promTable {
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 3
+ *
+ * 조회 기능이 있는 데이터테이블
+ *
+ * ---------------------------------------------------------------------------- */
+
+.table-type-3 .table-filter-light {
+	padding: 0.9375rem 0.46875rem 0 0.46875rem;
+	display: flex;
+	border-bottom: 2px solid #1d2026;
+	flex-wrap: wrap;
+}
+
+.table-type-3 .table-filter-dark {
+	padding: 0.9375rem 0.46875rem 0 0.46875rem;
+	display: flex;
+	border-bottom: 2px solid #17191e;
+	flex-wrap: wrap;
+}
+
+.table-type-3 .table-filter-light button,
+.table-type-3 .table-filter-dark button {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+.table-type-3 .table-filter-light div[class*=col-],
+.table-type-3 .table-filter-dark div[class*=col-] {
+	padding-right: 0.46875rem;
+	padding-left: 0.46875rem;
+	margin-bottom: 0.9375rem;
+	width: 50%;
+}
+
+.table-type-3 .table-filter-light div[class*=col-].width-100,
+.table-type-3 .table-filter-dark div[class*=col-].width-100 {
+	width: 100%;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 4
+ *
+ * 여러 테이블
+ *
+ * ---------------------------------------------------------------------------- */
+
+.table-type-4 .card {
+	border-radius: 0;
+	box-shadow: none;
+}
+
+@media (min-width: 576px) {
+	.table-type-4>div>div:first-child {
+		border-right: 2px solid #1d2026;
+	}
+
+	.table-type-4>div:last-child .border-bottom-light {
+		border-bottom: none;
+	}
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 5
+ *
+ * 테이블 max-height
+ *
+ * ---------------------------------------------------------------------------- */
+
+/* table-type-5-1 */
+/* 탭 없음, 옵션 없음 (호스트 관리)*/
+.table-type-5-1 .datatables-body {
+	max-height: 39rem;
+}
+
+/* table-type-5-2 */
+/* 탭 있음, 옵션 한줄 (가상머신 관리)*/
+.table-type-5-2 .datatables-body {
+	max-height: 31rem;
+}
+
+/* table-type-5-3 */
+/* 탭 없음, 옵션 한줄 + 테이블 두개 (데이터스토어 관리) */
+.table-type-5-3 .datatables-body {
+	max-height: 11.3rem;
+}
+
+/* table-type-5-4 */
+/* 탭 있음, 옵션 한줄 + 브라우저 크기 줄면 두줄 (가상머신 동향) */
+.table-type-5-4 .datatables-body {
+	max-height: 31rem;
+}
+
+@media (max-width: 576px) {
+	.table-type-5-4 .datatables-body {
+		max-height: 27.8rem;
+	}
+}
+
+/* table-type-5-5 */
+/* 탭 있음, 옵션 한줄 + 브라우저 크기 줄면 세줄 (보고서) */
+.table-type-5-5 .datatables-body {
+	max-height: 31rem;
+}
+
+@media (max-width: 576px) {
+	.table-type-5-5 .datatables-body {
+		max-height: 24.6rem;
+	}
+}
+
+/* table-type-5-6 */
+/* 탭 있음, 옵션 없음 (환경설정) */
+.table-type-5-6 .datatables-body {
+	max-height: 35.2rem;
+}
+
+/* table-type-5-7 */
+/* 대시보드 TOP 5  테이블 */
+.table-type-5-7 .datatables-body {
+	height: 14.35rem;
+	text-align: center;
+}
+
+/* table-type-5-8 */
+/* 신청 승인 관리 테이블 */
+.table-type-5-8 .datatables-body {
+	max-height: 20rem;
+}
+
+@media (max-width: 576px) {
+	.table-type-5-8 .datatables-body {
+		max-height: 19.75rem;
+	}
+}
+
+/* table-type-5-9 */
+/* 성능 통계 테이블 */
+.table-type-5-9 .datatables-body {
+	max-height: 14.8rem;
+}
+
+/* table-type-5-11 */
+/* 성능 통계 */
+.table-type-5-11 .datatables-body {
+	max-height: 14.1rem;
+}
+
+@media (max-width: 576px) {
+	.table-type-5-11 .datatables-body {
+		max-height: 11.7rem;
+	}
+}
+
+.table-type-5-11 .table-filter-light {
+	max-height: 10.55rem;
+	overflow: auto;
+}
+
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 6
+ *
+ * 강조 테두리
+ *
+ * ---------------------------------------------------------------------------- */
+/* vPCU, CPU 강조 */
+.table-type-6>div:first-child table.promTable thead th:nth-child(2) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:first-child table.promTable tbody td:nth-child(2) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:first-child table.promTable tbody tr:last-child td:nth-child(2) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* Memory 강조 */
+.table-type-6>div:nth-child(2) table.promTable thead th:nth-child(3) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:nth-child(2) table.promTable tbody td:nth-child(3) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:nth-child(2) table.promTable tbody tr:last-child td:nth-child(3) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* Disk 강조 */
+.table-type-6>div:nth-child(3) table.promTable thead th:nth-child(4) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:nth-child(3) table.promTable tbody td:nth-child(4) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:nth-child(3) table.promTable tbody tr:last-child td:nth-child(4) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* Network 강조 */
+.table-type-6>div:nth-child(4) table.promTable thead th:nth-child(5) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:nth-child(4) table.promTable tbody td:nth-child(5) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-6>div:nth-child(4) table.promTable tbody tr:last-child td:nth-child(5) {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 7
+ *
+ * 결재 진행 테이블
+ *
+ * ---------------------------------------------------------------------------- */
+.table-type-7>div:first-child {
+	padding: 0.9375rem;
+}
+
+.table-type-7 table.promTable tbody tr th {
+	font-weight: normal;
+	border-bottom: 1px solid #1d2026;
+}
+
+.table-type-7 table.promTable tbody tr:last-child th {
+	border-bottom: 2px solid #1d2026;
+}
+
+.table-type-7 table.promTable tbody .bg-process {
+	border-bottom: 2px solid #1d2026;
+}
+
+.table-type-7 table.promTable thead th:nth-child(2n) {
+	border-top: 2px solid #a1a1a1;
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-7 table.promTable tbody td:nth-child(2n) {
+	border-right: 2px solid #a1a1a1;
+	border-left: 2px solid #a1a1a1;
+}
+
+.table-type-7 table.promTable tbody tr:last-child td {
+	border-bottom: 2px solid #a1a1a1;
+}
+
+.table-type-7 table.promTable thead th:nth-child(2n+1) {
+	background: none;
+	border-bottom: none;
+	border-top: 2px solid #1d2026;
+}
+
+.table-type-7 table.promTable thead th:first-child {
+	border-bottom: 1px solid #1d2026;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 8
+ *
+ * 성능 통계
+ *
+ * ---------------------------------------------------------------------------- */
+
+.statistics-chart-body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 13.9rem;
+	border-bottom: 2px solid #1d2026;
+}
+
+.filter-label {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+@media (max-width: 576px) {
+	.filter-label {
+		margin: 0 !important;
+		font-size: 0;
+	}
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 테이블 Type 9
+ *
+ * 가상머신 관리
+ *
+ * ---------------------------------------------------------------------------- */
+
+.table-type-9 .card {
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.table-type-9>div>div:last-child>.table-type-1>div:last-child>.table-title-dark {
+	height: 3.725rem;
+	padding: 0.8rem 0.9375rem;
+}
+
+.table-type-9>div>div:last-child>.table-type-1>div:last-child {
+	max-height: 35.2rem;
+	overflow: auto;
+}
+
+@media (min-width: 1200px) {
+	.table-type-9>div>div:first-child {
+		border-right: 2px solid #1d2026;
+	}
+
+	.table-type-9>div>div:first-child>div.border-bottom-light {
+		border-bottom: none;
+	}
+
+	.table-type-9>div>div:last-child>.table-type-1>.table-title-dark {
+		height: 8.5rem;
+	}
+}

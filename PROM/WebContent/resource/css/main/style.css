@@ -1,0 +1,192 @@
+@charset "UTF-8";
+@import url(../../fonts/font.css);
+
+body {
+	font-size: 14px;
+	font-family: Noto Sans KR, sans-serif;
+}
+
+/* 내비바 */
+/* 내비바 - 컴포넌트 공통 */
+nav.navbar .navbar-brand,
+nav.navbar .sidebar-toggler,
+nav.navbar .color-toggler,
+nav.navbar .navbar-account,
+nav.navbar .vCenterLink {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	padding: 0 20px;
+	cursor: pointer;
+}
+
+/* 내비바 - 로고 */
+nav.navbar .navbar-brand {
+	margin-right: 0;
+}
+
+/* 내비바 - 계정 관리 */
+nav.navbar .navbar-account .dropdown-menu-right {
+	margin-right: 20px;
+}
+
+nav.navbar .navbar-account>a {
+	display: flex;
+	align-items: center;
+}
+
+nav.navbar .navbar-account>a,
+nav.navbar .navbar-account>a:hover {
+	text-decoration: none;
+}
+
+/* 내비바 - 브라우저 크기 992px 이상 */
+@media (min-width: 992px) {
+
+	/* 내비바 - 로고 */
+	nav.navbar .navbar-brand {
+		width: 162.75px;
+	}
+
+	/* 내비바 - 알림 버튼 */
+	nav.navbar .vCenterLink {
+		margin-left: auto;
+	}
+
+	/* 내비바 - 계정 관리 */
+	nav.navbar .navbar-account>a>i {
+		margin-right: 10px;
+	}
+}
+
+/* 내비바 - 브라우저 크기 992px 이하 */
+@media (max-width: 992px) {
+
+	/* 내비바 - 사이드바 토글 버튼 */
+	nav.navbar .sidebar-toggler {
+		order: 1;
+	}
+
+	/* 내비바 - 컬러 토글 버튼 */
+	nav.navbar .color-toggler {
+		order: 2;
+	}
+
+	/* 내비바 - 로고 */
+	nav.navbar .navbar-brand {
+		order: 3;
+		margin: 0 auto;
+	}
+
+	/* 내비바 - 알림 버튼 */
+	nav.navbar .vCenterLink {
+		order: 4;
+	}
+
+	/* 내비바 - 계정 관리 */
+	nav.navbar .navbar-account {
+		order: 5;
+	}
+
+	nav.navbar .navbar-account>a>span {
+		font-size: 0;
+	}
+}
+
+/* 사이드바 */
+/* 사이드바 - 사이드바 헤더 */
+.sidebar nav.sidebar-content .sidebar-header {
+	border-bottom: 1px solid transparent;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+/* 사이드바 - 사이드바 바디 공통 */
+.sidebar nav.sidebar-content .sidebar-body ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+/* 사이드바 - 사이드바 바디 링크 */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link {
+	display: block;
+	height: 32px;
+	padding: 0 20px;
+	line-height: 32px;
+	text-decoration: none;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link:hover {
+	text-decoration: none;
+}
+
+/* 사이드바 - 1 Level */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li>a.sidebar-link i {
+	margin-right: 15px;
+}
+
+/* 사이드바 - 2 Level (서브 메뉴) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li a.sidebar-link:after {
+	content: '';
+	display: inline-block;
+	float: left;
+	width: 8px;
+	height: 100%;
+	border-right: 1px solid transparent;
+	margin-right: 20px;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li:first-child>a.sidebar-link:after {
+	height: 22px;
+	margin-top: 10px;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li:last-child>a.sidebar-link.collapsed:after,
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li:not(.sidebar-item-submenu):last-child>a.sidebar-link:after,
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li.sidebar-item-submenu:last-child>a.sidebar-link+ul.sidebar-item-group>li:last-child>a.sidebar-link:after {
+	height: 22px;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li>a.sidebar-link i.fa-angle-up {
+	float: right;
+	line-height: 32px;
+	transition: transform 0.2s;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li>a.sidebar-link.collapsed i.fa-angle-up {
+	transform: rotate(180deg);
+	transition: transform 0.2s;
+}
+
+/* 사이드바 - 3 Level (서브 메뉴) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group ul.sidebar-item-group a.sidebar-link:before {
+	content: '';
+	display: inline-block;
+	width: 15px;
+	height: 1px;
+	border-bottom: 1px solid transparent;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+/* 사이드바 - 사이드바 푸터 */
+.sidebar nav.sidebar-content .sidebar-footer {
+	font-size: 12px;
+	text-align: center;
+}
+
+.sidebar nav.sidebar-content .sidebar-footer i {
+	margin-right: 10px;
+}
+
+/* 콘텐트 래퍼 */
+/* 콘텐트 래퍼 - 디렉토리 */
+.content-wrapper .page-directory {
+	border-bottom: 1px solid transparent;
+	font-size: 12px;
+}
+
+.content-wrapper .page-directory i.fa-chevron-right {
+	margin: 0 10px;
+}

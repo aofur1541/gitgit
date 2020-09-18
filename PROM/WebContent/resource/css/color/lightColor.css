@@ -1,0 +1,76 @@
+@charset "UTF-8";
+
+body {
+	background-color: #FFFFFF;
+	color: #212121;
+}
+
+/* 내비바 */
+nav.navbar {
+	background: linear-gradient(180deg, rgba(25, 97, 185, 0.5) 0%, rgba(25, 97, 185, 0) 100%), #11439A;
+	color: #FFFFFF;
+}
+
+/* 내비바 - 계정 관리 */
+nav.navbar .navbar-account {
+	background-color: #1961B9;
+}
+
+nav.navbar .navbar-account>a,
+nav.navbar .navbar-account>a:hover {
+	color: #FFFFFF;
+}
+
+/* 사이드바 */
+.sidebar nav.sidebar-content {
+	background-color: #FAFAFA;
+}
+
+/* 사이드바 - 사이드바 바디 링크 */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link {
+	color: #212121;
+}
+
+/* 사이드바 - 사이드바 바디 링크 (hover, active) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link:hover {
+	background-color: #F5F5F5;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link.active {
+	font-weight: bold;
+	color: #1E72CB;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav li a.sidebar-link.active i {
+	color: #1E72CB;
+}
+
+/* 사이드바 - 1 Level 아이콘 */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li>a.sidebar-link i {
+	color: #9E9E9E;
+}
+
+/* 사이드바 - 2 Level (서브 메뉴) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li a.sidebar-link:after {
+	border-color: #BDBDBD;
+}
+
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group>li>a.sidebar-link i.fa-angle-up {
+	color: #212121;
+}
+
+/* 사이드바 - 3 Level (서브 메뉴) */
+.sidebar nav.sidebar-content .sidebar-body ul.sidebar-nav>li.sidebar-item-submenu>ul.sidebar-item-group ul.sidebar-item-group a.sidebar-link:before {
+	border-color: #BDBDBD;
+}
+
+/* 사이드바 - 사이드바 푸터 */
+.sidebar nav.sidebar-content .sidebar-footer i {
+	color: #9E9E9E;
+}
+
+/* 콘텐트 래퍼 - 디렉토리 */
+.content-wrapper .page-directory {
+	background-color: transparent;
+	border-color: #E0E0E0;
+}

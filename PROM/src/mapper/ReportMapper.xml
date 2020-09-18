@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.report.dao.ReportDAO">
+
+	<select id="selectVMReportList" parameterType="VMReportVO" resultType="VMReportVO">
+		select
+			v.vm_ID vmID,
+			v.vm_name vmName, 
+			v.vm_cpu vmCPU, 
+			v.vm_memory vmMemory, 
+			v.vm_disk vmDisk,
+			v.vm_OS vmOS,
+			c.clusterName clusterName,
+			h.vm_Hhostname hostName,
+			r.maxCPU,
+			r.maxMemory,
+			r.avgCPU,
+			r.avgMemory,
+			r.avgDisk,
+			r.avgNetwork,
+			ifnull(s.vm_service_name,'') serviceName,
+			ifnull(t.name,'') tenantName
+		from (
+				select 
+					d.vm_ID,
+					round(AVG(cpu), 2) avgCPU,
+					round(AVG(memory), 2) avgMemory,
+					round(AVG(disk), 2) avgDisk,
+					round(AVG(network), 2) avgNetwork,
+					max(cpu) maxCPU,
+					max(memory) maxMemory
+				from vm_data_info d
+				left join (
+						select * 
+						from perfVMDay
+						where 1 = 1
+						<if test='startDate != null and endDate != null'>
+							and `timestamp` between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+								and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+						</if>
+					) p on d.vm_ID = p.id
+				group by d.vm_ID
+			) r
+			join vm_data_info v on v.vm_ID = r.vm_ID
+			join vm_host_info h on h.vm_Hhostname = v.vm_host
+			join clusterInfo c on c.clusterName = h.hostParent
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>		
+			left join vm_service s on v.vm_service_ID = s.vm_service_ID
+			left join tenants t on t.id = s.tenants_id
+		where 1 = 1	
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on v.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>	
+			and v.vm_templet = "false"
+		<if test='category == "cluster" and clusterName != null and clusterName != "clusterAll"'>
+			and c.clusterId = #{clusterName}
+		</if>
+		<if test='category == "cluster" and hostName != null and hostName != "hostAll"'>
+			and h.vm_HID = #{hostName}
+		</if>
+		<if test='category == "serviceGroup" and tenantId != null and tenantId != -1 '>
+			and t.id = #{tenantId}
+		</if>
+		<if test='category == "serviceGroup" and  tenantId == null'>
+			<!-- 전체 : 미배치는 제외한다 -->
+			and t.name != ''
+		</if>
+		<if test='category == "serviceGroup" and tenantId == -1 or serviceId == -1'>
+			<!-- 미배치 -->
+			and (v.vm_service_ID = 0 or v.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>
+		<if test='category == "serviceGroup" and serviceId != null and serviceId > 0' >
+			and s.vm_service_ID = #{serviceId}
+		</if>
+	</select>
+	
+	<select id="selectVMDayNightReportList" parameterType="VMReportVO" resultType="VMReportVO">
+		select
+			d.vm_ID vmID,
+			d.vm_name vmName, 
+			d.vm_cpu vmCPU, 
+			d.vm_memory vmMemory, 
+			d.vm_disk vmDisk,
+			d.vm_OS vmOS,
+			c.clusterName clusterName,
+			h.vm_Hhostname hostName,
+			p.avgCPU,
+			p.avgMemory,
+			p.maxCPU,
+			p.maxMemory,
+			p.nightAvgCPU,
+			p.nightAvgMemory,
+			p.nightMaxCPU,
+			p.nightMaxMemory,
+			ifnull(s.vm_service_name,'') serviceName,
+			ifnull(t.name,'') tenantName
+		from vm_data_info d
+			join vm_host_info h on h.vm_Hhostname = d.vm_host
+			join clusterInfo c on c.clusterName = h.hostParent
+			left join (
+				select
+					id,
+					round(avg(d_avg_cpu), 2) avgCPU,
+					round(avg(d_avg_memory), 2) avgMemory,
+					max(d_max_cpu) maxCPU,
+					max(d_max_memory) maxMemory,
+					round(avg(n_avg_cpu), 2) nightAvgCPU,
+					round(avg(n_avg_memory), 2) nightAvgMemory,
+					max(n_max_cpu) nightMaxCPU,
+					max(n_max_memory) nightMaxMemory
+				from perf_vm_day_report
+				where 1 = 1
+				<if test='startDate != null and endDate != null'>
+					and `timestamp` between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+						and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+				</if>
+				group by id
+				) p on p.id = d.vm_ID
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>		
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on t.id = s.tenants_id
+		where 1 = 1	
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on t.id = s.tenants_id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>	
+			and d.vm_templet = "false"
+		<if test='category == "cluster" and clusterName != null and clusterName != "clusterAll"'>
+			and c.clusterId = #{clusterName}
+		</if>
+		<if test='category == "cluster" and hostName != null and hostName != "hostAll"'>
+			and h.vm_HID = #{hostName}
+		</if>
+		<if test='category == "serviceGroup" and tenantId != null and tenantId != -1 '>
+			and t.id = #{tenantId}
+		</if>
+		<if test='category == "serviceGroup" and  tenantId == null'>
+			<!-- 전체 : 미배치는 제외한다 -->
+			and t.name != ''
+		</if>
+		<if test='category == "serviceGroup" and tenantId == -1 or serviceId == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>
+		<if test='category == "serviceGroup" and serviceId != null and serviceId > 0' >
+			and s.vm_service_ID = #{serviceId}
+		</if>
+	</select>
+	
+	<select id="selectHostReportList" parameterType="HostReportVO" resultType="HostReportVO">
+		select
+			c.clusterName clusterName,
+			h.vm_HID vmHID,
+			h.vm_Hhostname hostName,
+			h.vm_Hcpu hostCPU,
+			h.vm_Hmemory hostMemory,
+			h.host_cpu_model cpuModel,
+			h.vm_HvmCount vmCount,
+			r.maxCPU,
+			r.maxMemory,
+			r.avgCPU,
+			r.avgMemory,
+			r.avgDisk,
+			r.avgNetwork,
+			(select sum(vm_cpu) from vm_data_info where vm_host = h.vm_Hhostname) sumCPU,
+			(select sum(vm_memory) from vm_data_info where vm_host = h.vm_Hhostname) sumMemory
+		from (
+				select 
+					d.vm_HID,
+					round(AVG(cpu), 2) avgCPU,
+					round(AVG(memory), 2) avgMemory,
+					round(AVG(disk), 2) avgDisk,
+					round(AVG(network), 2) avgNetwork,
+					max(cpu) maxCPU,
+					max(memory) maxMemory
+				from vm_host_info d
+				left join (
+						select * 
+						from perfHostDay
+						where 1 = 1
+						<if test='startDate != null and endDate != null'>
+							and `timestamp` between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+								and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+						</if>
+					) p on d.vm_HID = p.id
+				group by d.vm_HID
+			) r
+			join vm_host_info h on h.vm_HID = r.vm_HID
+			join clusterInfo c on c.clusterName = h.hostParent
+		where 1= 1
+		<if test='clusterName != null and clusterName != "clusterAll"'>
+			AND c.clusterId = #{clusterName}
+		</if>
+	</select>
+	
+	<select id="selectHostDayNightReportList" parameterType="HostReportVO" resultType="HostReportVO">
+		select
+			c.clusterName clusterName,
+			h.vm_Hhostname hostName,
+			h.vm_Hcpu hostCPU,
+			h.vm_Hmemory hostMemory,
+			h.host_cpu_model cpuModel,
+			h.vm_HvmCount vmCount,
+			p.avgCPU,
+			p.avgMemory,
+			p.maxCPU,
+			p.maxMemory,
+			p.nightAvgCPU,
+			p.nightAvgMemory,
+			p.nightMaxCPU,
+			p.nightMaxMemory,
+			(SELECT sum(vm_cpu) FROM vm_data_info where vm_host = h.vm_Hhostname) AS sumCPU,
+			(SELECT sum(vm_memory) FROM vm_data_info where vm_host = h.vm_Hhostname) AS sumMemory
+		from vm_host_info h
+			join clusterInfo c on c.clusterName = h.hostParent
+			left join (
+				select
+					id,
+					round(avg(d_avg_cpu), 2) avgCPU,
+					round(avg(d_avg_memory), 2) avgMemory,
+					max(d_max_cpu) maxCPU,
+					max(d_max_memory) maxMemory,
+					round(avg(n_avg_cpu), 2) nightAvgCPU,
+					round(avg(n_avg_memory), 2) nightAvgMemory,
+					max(n_max_cpu) nightMaxCPU,
+					max(n_max_memory) nightMaxMemory
+				from perf_host_day_report
+				where 1 = 1
+				<if test='startDate != null and endDate != null'>
+					and `timestamp` between str_to_date(#{startDate}, '%Y-%m-%d %H:%i:%s') 
+						and str_to_date(#{endDate}, '%Y-%m-%d %H:%i:%s')
+				</if>
+				group by id
+				) p on p.id = h.vm_HID
+		where 1= 1
+		<if test='clusterName != null and clusterName != "clusterAll"'>
+			and c.clusterId = #{clusterName}
+		</if>
+	</select>
+	
+</mapper>

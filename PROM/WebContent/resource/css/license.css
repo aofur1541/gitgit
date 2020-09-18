@@ -1,0 +1,74 @@
+@charset "UTF-8";
+
+#createLicense {
+	margin-bottom: 150px;
+	width: 100%;
+}
+
+.content.noLicense {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-grow: 1;
+}
+
+.contentLicense {
+	margin-bottom: 50px;
+	display: flex;
+	flex-direction:column;
+	align-items: center;
+}
+
+.contentLicense :nth-child(1) {
+	margin-bottom: 30px;
+}
+
+.contentLicense :nth-child(2) {
+	font-size: 20px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.contentLicense :nth-child(3) {
+	margin-bottom: 35px;
+}
+
+.contentLicense :nth-child(4) {
+	font-size: 12px;
+	margin-bottom: 0;
+}
+
+.inputLicense {
+	display: flex;
+}
+
+.inputLicense input.form-control {
+	margin-bottom: 0;
+	margin-right: 10px;
+	padding: 11px 15px;
+	height: auto;
+}
+
+.inputLicense :nth-child(1) {
+	flex: 2;
+}
+
+.inputLicense :nth-child(2) {
+	flex: 1;
+}
+
+.inputLicense :nth-child(3) {
+	flex: 1;
+}
+
+.inputLicense :nth-child(4) {
+	flex: 1;
+}
+
+.inputLicense :nth-child(5) {
+	flex: 3;
+}
+
+.inputLicense :nth-child(6) {
+	flex: 1;
+}

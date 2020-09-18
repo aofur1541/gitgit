@@ -1,0 +1,18 @@
+var USER_NUMBER = 1;
+var USER_NAME = '사용자';
+
+var CONTROL_NUMBER = 20;
+var CONTROL_NAME = '관제 OP';
+
+var TEANT_ADMIN_NUMBER = 97;
+var TEANT_ADMIN_NAME = '테넌트 관리자';
+
+var INFRA_ADMIN_NUMBER = 98;
+var INFRA_ADMIN_NAME = '인프라 관리자';
+
+var SUPER_ADMIN_NUMBER = 99;
+var SUPER_ADMIN_NAME = '슈퍼 관리자';
+
+var USER_CHECK = 10;
+var CONTROL_CHECK = 20;
+var ADMIN_CHECK = 90;

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.support.dao.QuestionDAO">
+	
+	<select id="selectQuestionList" resultType="QuestionVO">
+		select 
+			@ROWNUM:=@ROWNUM+1 as row,
+			a.id,
+			a.title,
+			a.question,
+			a.answer,
+			a.questionerID,
+			a.answerID,
+			a.isAnswered,
+			a.created_on as createdOn,
+			a.updated_on as updatedOn
+		from questions a, (select @ROWNUM:=0) r
+	</select>
+	
+	<select id="selectQuestion" resultType="QuestionVO">
+		select 
+			@ROWNUM:=@ROWNUM+1 as row,
+			a.id,
+			a.title,
+			a.question,
+			a.answer,
+			a.questionerID,
+			a.answerID,
+			a.isAnswered,
+			a.created_on as createdOn,
+			a.updated_on as updatedOn
+		from questions a, (select @ROWNUM:=0) r
+		where id = #{id}
+	</select>
+
+	<select id="selectPreQuestion" resultType="QuestionVO">
+		select 
+			id,
+			title,
+			question,
+			answer,
+			questionerID,
+			answerID,
+			isAnswered,
+			created_on as createdOn,
+			updated_on as updatedOn
+		from questions
+		where id <![CDATA[ < ]]> #{id}
+		order by id desc 
+		limit 1
+	</select>
+
+	<select id="selectNextQuestion" resultType="QuestionVO">
+		select 
+			id,
+			title,
+			question,
+			answer,
+			questionerID,
+			answerID,
+			isAnswered,
+			created_on as createdOn,
+			updated_on as updatedOn
+		from questions
+		where id <![CDATA[ > ]]> #{id}
+		order by id desc 
+		limit 1
+	</select>
+	
+	<select id="countUnansweredQuestion" resultType="int">
+		select count(isAnswered) 
+		from questions 
+		where isAnswered = 0
+	</select>
+	
+	<insert id="insertQuestion">
+		insert into questions (
+			title,
+			question,
+			questionerID,
+			isAnswered,
+			created_on,
+			updated_on
+		) values (
+			#{title},
+			#{question},
+			#{questionerID},
+			0,
+			now(),
+			now()
+		)
+	</insert>
+	
+	<update id="updateQuestion">
+		update questions
+		set 
+			title = #{title},
+			question = #{question},
+			updated_on = now()
+		where id = #{id}
+	</update>
+	
+	<update id="updateAnswer">
+		update questions
+		set 
+			answer = #{answer},
+			answerID = #{answerID},
+			isAnswered = 1,
+			updated_on = NOW()
+		where id = #{id}
+	</update>
+	
+	<update id="deleteAnswer">
+		update questions
+		set 
+			answer = "",
+			answerID = DEFAULT,
+			isAnswered = 0,
+			updated_on = NOW()
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteQuestion">
+		delete from questions
+		where id = #{id}
+	</delete>
+	
+</mapper>

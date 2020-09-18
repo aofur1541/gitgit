@@ -1,0 +1,152 @@
+@charset "UTF-8";
+
+/* ------------------------------------
+ * # 기본 설정
+ * ------------------------------------ */
+
+body {
+	display: flex;
+	min-height: 100vh;
+}
+
+.row {
+	margin-right: -20px;
+	margin-left: -20px;
+	height: 100%;
+}
+
+.row>div[class*=col-] {
+	padding-right: 20px;
+	padding-left: 20px;
+}
+
+.content {
+	display: flex;
+	width: 100%;
+	padding: 20px;
+}
+
+/* ------------------------------------
+ * # overview
+ * ------------------------------------ */
+
+/* 1200px 이상 */
+@media (min-width: 1200px) {
+	.row>div[class*=col-].imgDiv,
+	.row>div[class*=col-].loginDiv {
+		padding-left: 8%;
+		padding-right: 8%;
+	}
+}
+
+/* 1200px 이하 */
+@media (max-width: 1200px) {
+	.divWrapper {
+		flex: 0 0 100%;
+		max-width: 100%;
+		margin-left: 0;
+	}
+}
+
+/* 576px 이상 */
+@media (min-width: 576px) {
+	.content {
+		justify-content: center;
+		align-items: center;
+	}
+
+	form {
+		height: 80%;
+	}
+
+	.row>div[class*=col-].imgDiv {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		border-right: 1px solid #EEEEEE;
+	}
+	
+	.row>div[class*=col-].imgDiv img {
+		padding-top: 100px;
+		padding-bottom: 100px;
+	}
+
+	.row>div[class*=col-].loginDiv {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+}
+
+/* 576px 이하 */
+@media (max-width: 576px) {
+	.row>div[class*=col-].imgDiv {
+		height: 350px;
+	}
+}
+
+/* ------------------------------------
+ * # 폼
+ * ------------------------------------ */
+form .form-title {
+	margin-bottom: 40px;
+	color: #365280;
+	font-weight: bold;
+}
+
+form .input-group {
+	margin-bottom: 15px;
+}
+
+form .input-group .form-control {
+	border-radius: 0;
+	border-width: 2px;
+	border-color: #E0E0E0;
+}
+
+form .input-group .input-group-text {
+	min-width: auto;
+	width: 60px;
+	height: 60px;
+	border-radius: 0;
+	border-width: 2px;
+	border-color: #E0E0E0;
+	font-size: 18px;
+	color: #44A1EF;
+}
+
+form .error-content {
+	margin-bottom: 15px;
+	color: #9E9E9E;
+	line-height: 2;
+}
+
+form .error-content h6 {
+	margin-bottom: 15px;
+	color: #365280;
+}
+
+button.btn.login-btn {
+	width: 100%;
+	height: 60px;
+	border-radius: 0;
+	border-color: #44A1EF;
+	background-color: #44A1EF;
+	font-size: 16px;
+}
+
+.loginButtonGrouop {
+	display: inline-table;
+}
+
+.loginButtonGrouop button.btn.goBackBtn {
+	margin-right: 10px;
+	border-color: #44A1EF;
+	background-color: transparent;
+	color: #44A1EF;
+}
+
+.loginButtonGrouop button.btn.goLoginBtn {
+	border-color: #44A1EF;
+	background-color: #44A1EF;
+}

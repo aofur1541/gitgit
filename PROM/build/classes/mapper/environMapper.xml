@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.mapper.environMapper">
+
+<select id="getPartCheckOfHost" resultType="hostInfo">
+SELECT h.* FROM vm_host_info AS h
+JOIN hostNetwork AS hn ON hn.hostID = h.vm_Hhostname
+JOIN hostDataStore AS hd ON hd.hostID = h.vm_Hhostname
+WHERE hn.netWorkID = #{default_network} AND hd.dataStoreID = #{default_storage}
+</select>
+
+<select id="getLowestHostsInCluster" resultType="hostDetail">
+SELECT p.cpu AS vm_Hcpu_value,p.memory AS vm_Hmemory_value,p.timestamp AS vm_Hdatetime,h.*
+FROM vm_host_info AS h
+JOIN clusterInfo AS c ON c.clusterName = h.hostParent
+JOIN perfHostRealtime AS p ON p.id = h.vm_HID
+<if test="clusterId != null">
+WHERE c.clusterID = #{clusterId}
+</if>
+AND p.timestamp = (SELECT DATE_SUB(max(p2.timestamp),interval 60 SECOND) FROM perfHostRealtime AS p2)
+ORDER BY p.cpu
+<if test="limitActive != null">
+limit ${limitActive}
+</if>
+</select>
+
+<select id="getManualScaleOutList" resultType="manualScale">
+SELECT m.*,s.vm_service_name AS service_ids,s.tenants_id,c.clusterID,IFNULL(d.vm_name,'없음') AS template_ids,s.*
+FROM manualscale as m
+LEFT JOIN vm_data_info AS d ON d.vm_ID = m.template_id
+JOIN vm_service AS s ON s.vm_service_ID = m.service_id
+JOIN tenants AS t ON s.tenants_id = t.id
+LEFT JOIN clusterInfo AS c ON c.clusterName = s.default_cluster
+<if test="id != null"> WHERE m.id = #{id} </if>
+</select>
+
+<select id="getVMsInService" resultType="vmDataInfo">
+SELECT d.*,h.vm_Hcpu as hostCPU,h.vm_Hmemory as hostMemory
+FROM vm_data_info AS d
+JOIN vm_service AS s ON d.vm_service_ID = s.vm_service_ID
+JOIN vm_host_info AS h ON d.vm_host = h.vm_Hhostname
+WHERE s.vm_service_ID = #{service_id}
+<if test="startIP != null"> 
+AND d.vm_ipaddr1 >= #{startIP} AND d.vm_ipaddr1 <![CDATA[<=]]> #{endIP}
+ORDER BY d.vm_ipaddr1 DESC,d.vm_ipaddr2 DESC ,d.vm_ipaddr3 DESC limit 1;
+</if>
+</select>
+
+<select id="getAutoScaleUpList" resultType="autoScaleUp">
+SELECT a.*,s.vm_service_name AS service_ids,s.tenants_id,IFNULL(a.service_id,0) AS service_id,IFNULL(s.tenants_id,0) AS tenants_id
+FROM autoscaleUp AS a
+LEFT JOIN vm_service AS s ON s.vm_service_ID = a.service_id
+LEFT JOIN tenants AS t ON s.tenants_id = t.id
+<if test="service_id != null"> WHERE a.service_id = #{service_id} </if>
+<if test="id != null"> WHERE a.id = #{id} </if>
+<if test="isUse != null"> WHERE a.isUse = #{isUse} </if>
+</select>
+
+<!-- insert -->
+<insert id="setAutoScaleUp">
+INSERT INTO autoscaleUp (id,service_id,cpuUp,memoryUp,cpuAdd,memoryAdd,isUse,status,waiting,updated_on) 
+VALUES (#{id},#{service_id},#{cpuUp},#{memoryUp},#{cpuAdd},#{memoryAdd},#{isUse},0,#{waiting},null)
+</insert>
+
+<insert id="setManualScaleOutInfo">
+INSERT INTO manualscale (id,service_id,naming,postfix,startIP,endIP,template_id,status,next_vm) 
+VALUES (#{id},#{service_id},#{naming},#{postfix},#{startIP},#{endIP},#{template_id},0,null)
+</insert>
+
+
+
+<!-- update -->
+<update id="manualScaleOutPreVMUpdate">
+UPDATE manualscale SET next_vm = #{vm_name},postfix = #{nPostfix} where id = #{id}
+</update>
+
+<update id="upManualScaleOutInfo">
+UPDATE manualscale SET naming=#{naming},postfix=#{postfix},startIP=#{startIP},endIP=#{endIP},template_id=#{template_id}
+WHERE id = #{id}
+</update>
+
+<update id="upAutoScaleUpInfo">
+UPDATE autoscaleUp SET service_id=#{service_id},cpuUp=#{cpuUp},memoryUp=#{memoryUp},cpuAdd=#{cpuAdd},memoryAdd=#{memoryAdd},isUse=#{isUse},waiting=#{waiting}
+WHERE id = #{id}
+</update>
+
+<update id="upAutoScaleStatus">
+UPDATE autoscaleUp SET status=#{status},updated_on=DATE_ADD(NOW(), INTERVAL #{waiting} MINUTE)
+WHERE id = #{id}
+</update>
+
+<delete id="deleteAutoScaleUpInfo">
+DELETE FROM autoscaleUp WHERE id = #{id}
+</delete>
+
+<delete id="deleteManualScaleOutInfo">
+DELETE FROM manualscale WHERE id = #{id}
+</delete>
+
+
+</mapper>

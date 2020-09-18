@@ -1,0 +1,167 @@
+@charset "utf-8";
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 기본 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+.helpDesk-header {
+	padding: 0.9375rem;
+	border-bottom: 2px solid #1d2026;
+	width: 100%;
+}
+
+.helpDesk-body {
+	background-color: #f7f7f7;
+	width: 100%;
+	overflow: auto;
+}
+
+.helpDesk-footer {
+	padding: 0.9375rem;
+	display: flex;
+	border-top: 2px solid #1d2026;
+}
+
+.helpDesk-link {
+	cursor: pointer;
+	color: #fff;
+}
+
+.helpDesk-link:hover {
+	color: #00baf2;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # header 타이틀 말줄임표
+ *
+ * ---------------------------------------------------------------------------- */
+.helpDesk-header .header-title {
+	overflow: hidden;
+}
+
+.helpDesk-header h4,
+.helpDesk-header h6 {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}
+
+.helpDesk-header .list-icons-item {
+	margin-left: 0.9375rem;
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 등록 제목 
+ *
+ * ---------------------------------------------------------------------------- */
+
+@media (max-width: 576px) {
+	.helpDesk-header label {
+		font-size: 0;
+	}
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # body height 지정
+ *
+ * ---------------------------------------------------------------------------- */
+
+/* helpDesk-type-1 */
+.helpDesk-body.helpDesk-type-1 {
+	padding: 0.9375rem;
+	height: 32.75rem;
+}
+
+/* helpDesk-type-2 */
+.helpDesk-body.helpDesk-type-2 {
+	padding: 0.9375rem;
+	height: 13.52rem;
+}
+
+/* helpDesk-type-3 */
+.helpDesk-body.helpDesk-type-3 {
+	padding: 0.9375rem;
+	height: 10.1rem;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # footer 이전글/다음글 테이블 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+table.orderTable {
+	table-layout: fixed;
+}
+
+table.orderTable tbody th {
+	background-color: #1d2026;
+	text-align: center;
+	width: 10%;
+	font-weight: normal;
+}
+
+table.orderTable tbody tr:first-child th {
+	border-bottom: 1px solid #17191e;
+}
+
+table.orderTable tbody tr:first-child td {
+	border-bottom: 1px solid #1d2026;
+}
+
+table.orderTable tbody th,
+table.orderTable tbody td {
+	padding: 0.625rem 0.9375rem;
+}
+
+@media (max-width: 768px) {
+	table.orderTable tbody th {
+		width: 30%;
+	}
+}
+
+table.orderTable tbody td {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-wrap: normal;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # summernote tab height 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+	.note-toolbar {
+		max-height: 4.1rem;
+		overflow: auto;
+	}
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # summernote tab modal 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+.note-modal .modal-header {
+	padding: 1.25rem 0.9375rem;
+}
+
+.note-modal .modal-body,
+.note-modal .modal-footer {
+	padding: 0.9375rem;
+}
+
+.note-modal .modal-footer {
+	border-radius: 0 0 0.1875rem 0.1875rem;
+}

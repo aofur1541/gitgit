@@ -1,0 +1,243 @@
+@charset "utf-8";
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 기본 모달 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+.modal-header {
+	padding: 1.25rem 0.9375rem 1.25rem 0.9375rem;
+	border: 0;
+}
+
+.addModal button {
+	margin-left: 0.9375rem;
+}
+
+.modal-body {
+	padding: 0;
+}
+
+.modal-body .card {
+	box-shadow: none;
+}
+
+.modal-body .card-header {
+	padding: 0.9375rem;
+}
+
+.modal-body .card-body {
+	padding: 0.9375rem 0.9375rem 0 0.9375rem;
+}
+
+.modal-body .card-header a {
+	color: #333;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.modal-footer {
+	padding: 0.9375rem;
+	border-bottom-left-radius: 0.1875rem;
+	border-bottom-right-radius: 0.1875rem;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모달 Type 1
+ *
+ * 필수 입력 정보, 선택 입력 정보
+ *
+ * ---------------------------------------------------------------------------- */
+
+.modal-type-1 .card-body {
+	border-left: 3px solid #00baf2;
+}
+
+.modal-type-1>div:last-child .card-header {
+	border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+
+/* modal-type-1-1 */
+/* 내용 길이 (필수<선택) */
+
+.modal-type-1-1>div:first-child .card-body {
+	max-height: 6.2rem;
+	overflow: auto;
+}
+
+.modal-type-1-1>div:last-child .card-body {
+	max-height: 18.5rem;
+	overflow: auto;
+}
+
+/* modal-type-1-2 */
+/* 내용 길이 (필수>선택) */
+
+.modal-type-1-2>div:first-child .card-body {
+	max-height: 18.5rem;
+	overflow: auto;
+}
+
+.modal-type-1-2>div:last-child .card-body {
+	max-height: 6.2rem;
+	overflow: auto;
+}
+
+/* modal-type-1-3 */
+/* 내용 길이 (필수=선택) */
+
+.modal-type-1-3 .card-body {
+	max-height: 12.5rem;
+	overflow: auto;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모달 Type 2
+ *
+ * 필수 입력 정보, 선택 입력 정보 (내용 많음)
+ *
+ * ---------------------------------------------------------------------------- */
+
+.modal-type-2 .card-body {
+	max-height: 28rem;
+	overflow: auto;
+}
+
+.modal-type-2>div>div:first-child {
+	border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+@media (max-width: 576px) {
+	.modal-type-2 .card-body {
+		border-left: 3px solid #00baf2;
+		max-height: 13rem;
+		overflow: auto;
+	}
+
+	.modal-type-2>div>div:last-child .card-header {
+		border-top: 1px solid rgba(0, 0, 0, 0.125);
+	}
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모달 Type 3
+ *
+ * 필수 입력 정보만 있음 (내용 많음)
+ *
+ * ---------------------------------------------------------------------------- */
+
+.modal-type-3-body>div>div:first-child>div {
+	border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+@media (min-width: 576px) {
+	.modal-type-3-body .card-body {
+		max-height: 28rem;
+		overflow: auto;
+	}
+}
+
+@media (max-width: 576px) {
+	.modal-type-3-body {
+		border-left: 3px solid #00baf2;
+		max-height: 28rem;
+		overflow: auto;
+	}
+
+	.modal-type-3-body>div>div:first-child>div {
+		border-right: none;
+	}
+
+	.modal-type-3-body>div>div:last-child>div {
+		padding-top: 0;
+	}
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모달 Type 4
+ *
+ * 필수 입력 정보만 있음
+ *
+ * ---------------------------------------------------------------------------- */
+
+.modal-type-4 .card-body {
+	border-left: 3px solid #00baf2;
+	max-height: 28rem;
+	overflow: auto;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모달 Type 5
+ *
+ * 내용만 있음
+ *
+ * ---------------------------------------------------------------------------- */
+
+.modal-type-5 {
+	padding: 0.9375rem 0.9375rem 0 0.9375rem;
+	max-height: 28rem;
+	overflow: auto;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모달 Type 6
+ *
+ * 탭이 세개
+ *
+ * ---------------------------------------------------------------------------- */
+.modal-type-6>div>div:first-child>div:last-child .card-header {
+	border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.modal-type-6>div>div:first-child>div:first-child .card-body {
+	height: 15rem;
+	overflow: auto;
+}
+
+.modal-type-6>div>div:first-child>div:last-child .card-body {
+	max-height: 9.7rem;
+	overflow: auto;
+}
+
+.modal-type-6>div>div:last-child>div .card-body {
+	max-height: 28rem;
+	overflow: auto;
+}
+
+.modal-type-6>div>div:first-child {
+	border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+@media (max-width: 576px) {
+	.modal-type-6>div>div:first-child {
+		border-right: none;
+	}
+
+	.modal-type-6>div>div:last-child>div .card-header {
+		border-top: 1px solid rgba(0, 0, 0, 0.125);
+	}
+
+	.modal-type-6>div>div:first-child>div:first-child .card-body {
+		max-height: 5rem;
+		overflow: auto;
+	}
+
+	.modal-type-6>div>div:first-child>div:last-child .card-body {
+		max-height: 5rem;
+		overflow: auto;
+	}
+
+	.modal-type-6>div>div:last-child>div .card-body {
+		max-height: 11.7rem;
+		overflow: auto;
+	}
+}

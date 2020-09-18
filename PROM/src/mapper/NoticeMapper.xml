@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.support.dao.NoticeDAO">
+	
+	<select id="selectNoticeList" resultType="NoticeVO">
+		select 
+			@ROWNUM:=@ROWNUM+1 as row,
+			a.id,
+			a.title,
+			a.contents,
+			a.writerID,
+			a.viewCount,
+			a.created_on as createdOn,
+			a.updated_on as updatedOn
+		from notices a, (select @ROWNUM:=0) r
+	</select>
+	
+	<select id="selectNotice" resultType="NoticeVO">
+		select 
+			@ROWNUM:=@ROWNUM+1 as row,
+			a.id,
+			a.title,
+			a.contents,
+			a.writerID,
+			a.viewCount,
+			a.created_on as createdOn,
+			a.updated_on as updatedOn
+		from notices a, (select @ROWNUM:=0) r 
+		where id = #{id};
+	</select>
+	
+	<select id="selectPreNotice" resultType="NoticeVO">
+		SELECT
+			id,
+			title,
+			contents,
+			writerID,
+			viewCount,
+			created_on as createdOn,
+			updated_on as updatedOn
+		FROM notices 
+		WHERE notices.id <![CDATA[ < ]]> #{id} 
+		ORDER BY notices.id DESC 
+		LIMIT 1
+	</select>
+
+	<select id="selectNextNotice" resultType="NoticeVO">
+		SELECT
+			id,
+			title,
+			contents,
+			writerID,
+			viewCount,
+			created_on as createdOn,
+			updated_on as updatedOn
+		FROM notices
+		WHERE notices.id <![CDATA[ > ]]> #{id} 
+		ORDER BY notices.id 
+		LIMIT 1
+	</select>
+	
+	<insert id="insertNotice">
+		insert into notices (
+			title,
+			contents,
+			writerID,
+			created_on,
+			updated_on)
+		values(
+			#{title},
+			#{contents},
+			#{writerID},
+			NOW(),
+			NOW()
+		)
+	</insert>
+	
+	<update id="updateNotice">
+		update notices
+		set 
+			title = #{title},
+			contents = #{contents},
+			writerID = #{writerID},
+			updated_on = NOW()
+		where id = #{id}
+	</update>
+	
+	<update id="increaseNoticeViewCount">
+		update notices
+		set 
+			viewCount = viewCount + 1
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteNotice">
+		delete from notices
+		where id = #{id};
+	</delete>
+	
+</mapper>

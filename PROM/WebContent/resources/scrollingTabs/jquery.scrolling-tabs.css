@@ -1,0 +1,103 @@
+@charset "utf-8";
+
+/**
+ * jquery-bootstrap-scrolling-tabs
+ * @version v2.6.1
+ * @link https://github.com/mikejacobson/jquery-bootstrap-scrolling-tabs
+ * @author Mike Jacobson <michaeljjacobson1@gmail.com>
+ * @license MIT License, http://www.opensource.org/licenses/MIT
+ */
+
+
+.scrtabs-tabs-movable-container {
+	height: 100%;
+}
+
+.scrtabs-tab-container * {
+	box-sizing: border-box;
+}
+
+.scrtabs-tab-container {
+	height: 3rem;
+}
+
+.scrtabs-tab-container .tab-content {
+	clear: left;
+}
+
+.scrtabs-tab-container.scrtabs-bootstrap4 .scrtabs-tabs-movable-container>.navbar-nav {
+	-ms-flex-direction: row;
+	flex-direction: row;
+}
+
+.scrtabs-tabs-fixed-container {
+	float: left;
+	height: 3rem;
+	overflow: hidden;
+	width: 100%;
+}
+
+.scrtabs-tabs-movable-container {
+	position: relative;
+}
+
+.scrtabs-tabs-movable-container .tab-content {
+	display: none;
+}
+
+.scrtabs-tab-container.scrtabs-rtl .scrtabs-tabs-movable-container>ul.nav-tabs {
+	padding-right: 0;
+}
+
+.scrtabs-tab-scroll-arrow {
+	background-color: #272b33;
+	border-radius: 0 .125rem .125rem 0;
+	border: 1px solid #17191e;
+	border-top: none;
+	border-bottom: none;
+	color: #fff;
+	display: none;
+	float: left;
+	font-size: 25px;
+	height: 3rem;
+	width: 30px;
+	text-align: center;
+	line-height: 2;
+}
+
+.glyphicon-chevron-right:before {
+	font-family: FontAwesome;
+	content: "\f0da";
+}
+
+.glyphicon-chevron-left:before {
+	font-family: FontAwesome;
+	content: "\f0d9";
+}
+
+.scrtabs-tab-scroll-arrow:hover {
+	background-color: #2e333a;
+}
+
+.scrtabs-tab-scroll-arrow,
+.scrtabs-tab-scroll-arrow .scrtabs-click-target {
+	cursor: pointer;
+}
+
+.scrtabs-tab-scroll-arrow.scrtabs-with-click-target {
+	cursor: default;
+}
+
+.scrtabs-tab-scroll-arrow.scrtabs-disable,
+.scrtabs-tab-scroll-arrow.scrtabs-disable .scrtabs-click-target {
+	color: #ddd;
+	cursor: default;
+}
+
+.scrtabs-tab-scroll-arrow.scrtabs-disable:hover {
+	background-color: initial;
+}
+
+.scrtabs-tabs-fixed-container ul.nav-tabs>li {
+	white-space: nowrap;
+}

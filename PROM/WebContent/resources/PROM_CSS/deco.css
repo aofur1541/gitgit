@@ -1,0 +1,251 @@
+@charset "utf-8";
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 기본 설정
+ *
+ * ---------------------------------------------------------------------------- */
+.border-top-light {
+	border-top: 2px solid #1d2026;
+}
+
+.cpointer {
+	cursor: pointer;
+}
+
+.displayNone {
+	display: none !important;
+}
+
+.navbar-nav>.nav-item>a {
+	white-space: nowrap;
+	height: 100%;
+}
+
+.navbar-nav>.nav-item>a>i {
+	margin: 0;
+}
+
+.sidebar-main-toggle:hover {
+	background-color: transparent;
+	color: #00baf2;
+}
+
+.nav-sidebar>.nav-item {
+	width: 100%;
+}
+
+.pace-demo {
+	z-index: 100;
+	position: fixed;
+	width: 100%;
+	height: 90%;
+	background-color: inherit;
+}
+
+.pace-back {
+	z-index: 99;
+	position: fixed;
+	background-color: #000;
+	opacity: 0.6;
+	width: 100%;
+	height: 100%;
+}
+
+.padding-0 {
+	padding: 0 !important;
+}
+
+.mr-2-5 {
+	margin-right: 0.9375rem !important;
+}
+
+.ml-2-5 {
+	margin-left: 0.9375rem;
+}
+
+.mb-2-5 {
+	margin-bottom: 0.9375rem;
+}
+
+.mt-2-5 {
+	margin-top: 0.9375rem;
+}
+
+.row-padding-0 {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+}
+
+.font-size-small {
+	font-size: 0.6875rem;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 메인 컬러
+ *
+ * #00baf2
+ *
+ * ---------------------------------------------------------------------------- */
+.bg-prom {
+	background-color: #00baf2 !important;
+}
+
+.text-prom {
+	color: #00baf2 !important;
+}
+
+.border-prom {
+	border-color: #00baf2 !important;
+}
+
+.border-top-prom {
+	border-top: 2px solid #00baf2 !important;
+}
+
+.border-bottom-prom {
+	border-bottom: 2px solid #00baf2 !important;
+}
+
+.btn-outline-prom {
+	color: #00baf2;
+	background-color: transparent;
+	background-image: none;
+	border-color: #00baf2;
+}
+
+.btn-outline-prom:hover {
+	color: #fff;
+	background-color: #00baf2;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 드래그 설정
+ *
+ * ---------------------------------------------------------------------------- */
+::-moz-selection {
+	background: rgba(0, 186, 242, 0.99);
+	color: #000;
+}
+
+: :selection {
+	background: rgba(0, 186, 242, 0.99);
+}
+
+::selection {
+	background: rgba(0, 186, 242, 0.99);
+	color: #000;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 스크롤 설정
+ *
+ * ---------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+	width: 0.25rem;
+	height: 0.25rem;
+}
+
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+	display: block;
+	width: 0.25rem;
+	height: 0.25rem;
+	background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #c1c1c1;
+	border-radius: 0.5rem;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 셀렉트 박스 2
+ *
+ * 셀렉트 박스 focus 설정
+ *
+ * ---------------------------------------------------------------------------- */
+.select2-selection--single:focus {
+	border-color: #00baf2 !important;
+}
+
+.select2-container--disabled .select2-selection--single:focus {
+	border-color: #ddd !important;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 모니터링 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+.monitoring-chart-body {
+	padding: 1.25rem 0.9375rem 0.625rem 0.9375rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 13rem;
+}
+
+.monitoring-chart-empty {
+	display: none;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # vCenter 로그 설정
+ *
+ * ---------------------------------------------------------------------------- */
+.bg-alertCheck {
+	background-color: #FF7043;
+}
+
+.bg-alertCheck:hover {
+	background-color: #fa6334 !important;
+}
+
+.bg-alertCheck i {
+	color: white !important;
+}
+
+.mLogList .datatables-body {
+	height: 15.98rem;
+}
+
+.mLogList table.promTable tbody tr:last-child>td {
+	border-bottom: 1px solid #1d2026;
+}
+
+/* ------------------------------------------------------------------------------
+ *
+ *  # 가상머신 생성 설정
+ *
+ * ---------------------------------------------------------------------------- */
+
+.vmCreate-body {
+	padding: 0.9375rem 0.9375rem 0 0.9375rem;
+	min-height: 39.25rem;
+}
+
+.vmCreate-body div[class*=col-] {
+	padding-right: 0.46875rem;
+	padding-left: 0.46875rem;
+	margin-bottom: 0.9375rem;
+}
+
+.vmCreate-body p {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	word-wrap: normal;
+	overflow: hidden;
+}

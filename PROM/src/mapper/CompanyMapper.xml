@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.user.dao.CompanyDAO">
+
+	<select id="selectCompanyListById" resultType="CompanyVO">
+		<!-- commpanyMapper.selectCompanyListById -->
+		select 
+			id,
+			name,
+			address,
+			registration_number as registrationNumber,
+			representative,
+			description,
+			created_on as createdOn,
+			updated_on as updatedOn
+		from company
+		<if test="value != null">
+		where id = #{value}
+		</if> 
+	</select>
+
+	<select id="selectCompanyListByName" resultType="CompanyVO">
+		<!-- commpanyMapper.selectCompanyListByName -->
+		select 
+			id,
+			name,
+			address,
+			registration_number as registrationNumber,
+			representative,
+			description
+		from company
+		where name = #{name}
+	</select>
+	
+	<select id="selectCompanyById" resultType="CompanyVO">
+		<!-- commpanyMapper.selectCompanyById -->
+		select 
+			id,
+			name,
+			address,
+			registration_number as registrationNumber,
+			representative,
+			description,
+			created_on as createdOn,
+			updated_on as updatedOn
+		from company
+		where id = #{id}
+	</select>
+	
+	<select id="countUserByComanyId" resultType="Integer">
+		<!-- commpanyMapper.countUserByComanyId -->
+		select count(*)
+		from sdsc_user
+		where sCompany = #{comanyId}
+	</select>
+	
+	<select id="countTenantsByComanyId" resultType="Integer">
+		<!-- commpanyMapper.countTenantsByComanyId -->
+		select count(*)
+		from tenants
+		where company_id = #{comanyId}
+	</select>
+	
+	<select id="countDepartmentByComanyId" resultType="Integer">
+		<!-- commpanyMapper.countDepartmentByComanyId -->
+		select count(*) 
+		from department 
+		where company_id = #{id}
+	</select>
+
+	<insert id="insertCompany">
+		<!-- commpanyMapper."insertCompany" -->
+		insert into company (
+			id,
+			name,
+			address,
+			registration_number,
+			representative,
+			description,
+			created_on,
+			updated_on)
+		values (
+			#{id},
+			#{name},
+			#{address},
+			#{registrationNumber},
+			#{representative},
+			#{description},
+			now(),
+			now())
+	</insert>
+	
+	<update id="updateCompany">
+		<!-- commpanyMapper."updateCompany" -->
+		update company 
+		set 
+			name = #{name},
+			address = #{address},
+			registration_number = #{registrationNumber},
+			representative = #{representative},
+			description = #{description} , 
+			updated_on = now() 
+		where id = #{id} 
+	</update>
+	
+	<delete id="deleteCompany">
+		delete from company 
+		where id = #{id}
+	</delete>
+
+</mapper>

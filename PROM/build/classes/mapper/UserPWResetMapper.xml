@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.approval.dao.UserPWResetDAO">
+
+	<select id="selectUserPWResetList" resultType="UserPWResetVO">
+		select 
+			u.id,
+			u.sName,
+			p.resetNum,
+			p.sUserID,
+			p.nNumber,
+			p.dRdatetime,
+			p.dApplytime,
+			p.nApproval,
+			p.pw_reset_comment as pwResetComment
+		from sdsc_user u, userPWreset p
+		where u.sUserID = p.sUserID
+		and p.nApproval = 0
+	</select>
+	
+	<insert id="insertUserPWReset">
+		<!-- userMapper.insertUserPWReset -->
+		insert into userPWreset(
+			sUserID,
+			nNumber,
+			dRdatetime,
+			nApproval) 
+		values(
+			#{sUserID},
+			#{nNumber},
+			now(),
+			0)
+	</insert>
+	
+	<update id="updateUserPWResetApproval">
+		update userPWreset 
+		set 
+			nApproval = #{nApproval}, 
+			pw_reset_comment = #{pwResetComment},
+			dApplytime = now() 
+		where resetNum = #{resetNum}
+	</update>
+	
+</mapper>

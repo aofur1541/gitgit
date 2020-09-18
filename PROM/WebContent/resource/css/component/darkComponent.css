@@ -1,0 +1,783 @@
+@charset "UTF-8";
+
+/* ------------------------------------
+ * # 폰트
+ * ------------------------------------ */
+.text-on {
+	color: #FDC75E !important;
+}
+
+.text-off {
+	color: #9D9FA4 !important;
+}
+
+.text-danger {
+	color: #FF6F6F !important;
+}
+
+.text-caution {
+	color: #FDC75E !important;
+}
+
+/* 폰트 - 링크 */
+a {
+	color: #57D7FF;
+}
+
+a:hover {
+	color: #57D7FF;
+}
+
+/* 폰트 - 비활성화 */
+.text-disabled {
+	color: #9D9FA4 !important;
+}
+
+/* ------------------------------------
+ * # 라이선스 얼럿
+ * ------------------------------------ */
+.alert-license {
+	background-color: #F53253;
+	color: #EFEFEF;
+}
+
+.alert-license a,
+.alert-license a:hover {
+	color: #EFEFEF;
+}
+
+/* ------------------------------------
+ * # 모달
+ * ------------------------------------ */
+.modal .modal-content {
+	background-color: #2F343D;
+}
+
+/* 모달 - 모달 헤더 */
+.modal .modal-content .modal-header {
+	background-color: #006DF1;
+}
+
+.modal .modal-content .modal-header button.close {
+	color: #EFEFEF;
+}
+
+/* 모달 - 모달 바디, 푸터 */
+.modal .modal-content .modal-body .modal-card:not(:first-child),
+.modal .modal-content .modal-footer {
+	border-color: #434953;
+}
+
+/* 모달 - modal-xl */
+@media (min-width: 1200px) {
+	.modal .modal-content .modal-body>.row>div[class*="col-"]:last-child {
+		border-color: #434953;
+	}
+}
+
+@media (max-width: 1200px) {
+	.modal .modal-content .modal-body>.row>div[class*="col-"]:last-child {
+		border-color: #434953;
+	}
+}
+
+/* ------------------------------------
+ * # 폼
+ * ------------------------------------ */
+.form-control {
+	border-color: #434953;
+	background-color: #434953;
+	color: #EFEFEF;
+}
+
+.form-control:focus {
+	border-color: #006DF1;
+	background-color: #434953;
+	color: #EFEFEF;
+}
+
+.form-control:disabled {
+	border-color: #3D434D;
+	background-color: #3D434D;
+	color: #9D9FA4;
+}
+
+.form-control::placeholder {
+	color: #787C82;
+}
+
+/* 폼 - 폼 그룹 */
+.input-group .input-group-text {
+	border-color: #515763;
+	background-color: #515763;
+	color: #EFEFEF;
+}
+
+/* 폼 - 폼 그룹 (서치) */
+.input-group.search-group .input-group-text {
+	border-color: #434953;
+	background-color: #434953;
+	color: #57D7FF;
+}
+
+.input-group.search-group .form-control:focus {
+	border-color: #434953;
+}
+
+/* ------------------------------------
+ * # 셀렉트2
+ * ------------------------------------ */
+.select2 .select2-selection {
+	border-color: #434953;
+	background-color: #434953;
+}
+
+.select2 .select2-selection .select2-selection__rendered {
+	color: #EFEFEF;
+}
+
+/* 셀렉트2 - 화살표 */
+.select2 .select2-selection .select2-selection__arrow b {
+	border-top-color: #9D9FA4;
+}
+
+.select2.select2-container--open .select2-selection .select2-selection__arrow b {
+	border-bottom-color: #9D9FA4;
+}
+
+/* 셀렉트2 - 드롭다운 */
+.select2-dropdown {
+	border-color: #434953;
+	background-color: #434953;
+}
+
+.select2-dropdown .select2-results__option--disabled {
+	color: #9D9FA4;
+}
+
+/* 셀렉트2 - 드롭다운 (서치) */
+.select2-dropdown .select2-search .select2-search__field {
+	border-color: #57D7FF;
+	color: #EFEFEF;
+}
+
+.select2-dropdown .select2-search .select2-search__field::placeholder {
+	color: #787C82;
+}
+
+.select2-dropdown .select2-search span:before {
+	color: #57D7FF;
+}
+
+/* 셀렉트2 - 드롭다운 (옵션) */
+.select2-dropdown .select2-results__option.select2-results__option--highlighted {
+	background-color: #2E7CFF;
+	color: #EFEFEF;
+}
+
+.select2-dropdown .select2-results__option.select2-results__option--selected {
+	background-color: #006DF1;
+	color: #EFEFEF;
+}
+
+/* 셀렉트2 - 비활성화 */
+.select2.select2-container--disabled .select2-selection {
+	border-color: #3D434D;
+	background-color: #3D434D;
+}
+
+.select2.select2-container--disabled .select2-selection .select2-selection__rendered {
+	color: #535961;
+}
+
+/* ------------------------------------
+ * # 버튼
+ * ------------------------------------ */
+button.btn {
+	border-color: #006DF1;
+	background-color: #006DF1;
+	color: #EFEFEF;
+}
+
+button.btn:hover {
+	border-color: #2E7CFF;
+	background-color: #2E7CFF;
+	color: #EFEFEF;
+}
+
+/* 버튼 - 데이터테이블즈 */
+button.btn.exportBtn {
+	border-color: #08818F;
+	background-color: #08818F;
+}
+
+button.btn.exportBtn:hover {
+	border-color: #00A1B5;
+	background-color: #00A1B5;
+}
+
+button.btn.pageLengthBtn,
+button.btn.colvisBtn,
+button.btn.unitButton {
+	border-color: #7C4DAC;
+	background-color: #7C4DAC;
+}
+
+button.btn.pageLengthBtn:hover,
+button.btn.colvisBtn:hover,
+button.btn.unitButton:hover {
+	border-color: #9947EB;
+	background-color: #9947EB;
+}
+
+/* 버튼 - 취소 */
+button.btn.cancelBtn {
+	background: #EDEDEF;
+	color: #006DF1;
+}
+
+button.btn.cancelBtn:hover {
+	background: #EDEDEF;
+	color: #2E7CFF;
+}
+
+/* 버튼 - 위젯 카드 내 토글 버튼 */
+.card.widget-card .btn-group-toggle label.btn {
+	border-color: #7C8596;
+	color: #EFEFEF;
+}
+
+.card.widget-card .btn-group-toggle label.btn.active {
+	background-color: #EFEFEF;
+	border-color: #EFEFEF;
+	color: #282828;
+}
+
+/* 버튼 - 자동 롤링 토글 */
+button.btn.autoRolling-toggle {
+	color: #EFEFEF;
+}
+
+button.btn.autoRolling-toggle b {
+	color: #9D9FA4;
+}
+
+button.btn.autoRolling-toggle.autoRolling b {
+	color: #57D7FF;
+}
+
+/* ------------------------------------
+ * # 라디오 버튼
+ * ------------------------------------ */
+
+/* 라디오 버튼 - Unselected */
+.custom-control-label::before {
+	border-color: #D6D8DD;
+	background-color: #D6D8DD;
+}
+
+/* 라디오 버튼 - Selected */
+.custom-radio .custom-control-input:checked~.custom-control-label::after {
+	background-color: #006DF1;
+}
+
+.custom-control-input:checked~.custom-control-label::before,
+.custom-control-input:not(:disabled):active~.custom-control-label::before {
+	border-color: #D6D8DD;
+	background-color: #D6D8DD;
+}
+
+/* ------------------------------------
+ * # 드롭다운
+ * ------------------------------------ */
+
+/* 드롭다운 - 기본 드롭다운, 데이터테이블즈 드롭다운 */
+.dropdown-menu,
+div.dt-button-collection {
+	border-color: #434953;
+	background-color: #434953;
+}
+
+.dropdown-menu .dropdown-item,
+div.dt-button-collection>div>button {
+	color: #EFEFEF;
+}
+
+.dropdown-menu .dropdown-item:hover,
+div.dt-button-collection>div>button:hover {
+	background-color: #2E7CFF;
+	color: #EFEFEF;
+}
+
+.dropdown-item.disabled {
+	color: #9D9FA4;
+}
+
+.dropdown-divider {
+	border-color: #2F343D;
+}
+
+/* 드롭다운 - 화살표 */
+.dropdown-submenu.dropright>.dropdown-toggle::after {
+	color: #9D9FA4;
+}
+
+/* 드롭다운 - 선택 가능한 드롭다운 */
+button.buttons-columnVisibility.active:before {
+	color: #57D7FF;
+}
+
+button.buttons-columnVisibility.active:hover:before {
+	color: #EFEFEF;
+}
+
+/* ------------------------------------
+ * # 카드
+ * ------------------------------------ */
+.card {
+	border-color: #2F343D;
+	background-color: #434953;
+}
+
+.card .card-header {
+	border-color: #2F343D;
+	background-color: #515763;
+}
+
+.card .card-footer {
+	background-color: #434953;
+}
+
+/* 카드 - 공통 */
+.card.template-card>.card-header,
+.card.widget-card>.card-header,
+.card.post-card>.card-header,
+.card.textEditor-card>.card-header,
+.card.performance-card>.card-header {
+	border-top-color: #9E9E9E;
+}
+
+/* 카드 - 조회 카드 */
+.card.Inquire-card {
+	border-color: #434953;
+	background-color: transparent;
+}
+
+/* 카드 - 템플릿 카드 */
+.card.template-card>.card-body .row div:first-child {
+	color: #57D7FF;
+}
+
+/* 카드 - 템플릿 카드, 위젯 카드 */
+.card.template-card>.card-header:before,
+.card.widget-card>.card-header:before {
+	color: #9D9FA4;
+}
+
+/* 카드 - 위젯 그룹 카드 */
+.card.widgetGroup-card>.card-body>.row-padding-0>div:first-child {
+	border-color: #2F343D;
+}
+
+/* 카드 - 위젯 리스트 카드 */
+.card.widgetList-card ul.widget-list {
+	border-color: #2F343D;
+}
+
+.card.widgetList-card ul.widget-list li.list-title {
+	color: #9D9FA4;
+}
+
+.card.widgetList-card ul.widget-list li:not(.list-title):hover {
+	background-color: #2E7CFF;
+	color: #EFEFEF;
+}
+
+.card.widgetList-card ul.widget-list li.active:before {
+	color: #57D7FF;
+}
+
+button.buttons-columnVisibility.active:hover:before {
+	color: #EFEFEF;
+}
+
+/* 카드 - 포스트 카드 */
+.card.post-card>.card-header .card-header-info {
+	border-color: #2F343D;
+	background-color: #3C414D;
+}
+
+/* 카드 - 성능 카드 */
+.performance-card>.card-header {
+	background-color: transparent;
+}
+
+/* ------------------------------------
+ * # 테이블
+ * ------------------------------------ */
+
+/* 테이블 - thead */
+table.cell-border thead tr th {
+	border-color: #2F343D;
+	border-top-color: #7C8596;
+	background-color: #515763;
+}
+
+/* 테이블 - tbody */
+table.cell-border tbody tr td,
+table.dataTable.cell-border tbody tr td {
+	border-color: #2F343D;
+}
+
+table.cell-border tbody tr,
+table.dataTable.cell-border tbody tr {
+	background-color: #434953;
+}
+
+/* 테이블 - tbody (hover) */
+table.hover tbody tr:hover,
+table.dataTable.hover tbody tr:hover {
+	background-color: #2E7CFF;
+}
+
+table.hover tbody tr:hover a,
+table.dataTable.hover tbody tr:hover a {
+	color: #EFEFEF;
+}
+
+/* 테이블 - tbody (selected) */
+table.cell-border tbody tr.selected,
+table.dataTable.hover tbody tr.selected:hover {
+	background-color: #006DF1;
+}
+
+table.cell-border tbody tr.selected a,
+table.dataTable.hover tbody tr.selected:hover a {
+	color: #EFEFEF;
+}
+
+table.cell-border tbody tr.alert-check {
+	background-color: #006DF1;
+	cursor: pointer;
+}
+
+/* 테이블 - 데이터테이블즈 푸터 (info) */
+.dataTables_wrapper .dataTables_info {
+	color: #EFEFEF;
+}
+
+/* 테이블 - 데이터테이블즈 푸터 (paginate) */
+.dataTables_wrapper .dataTables_paginate,
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	color: #EFEFEF !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button,
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+	border-color: #2F343D !important;
+	background-color: #434953;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:hover {
+	background-color: #2E7CFF;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+	background-color: #006DF1;
+	color: #EFEFEF !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+	color: #9D9FA4 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+	background-color: #434953;
+}
+
+/* 테이블 - 수직 테이블 */
+table.vertical-table tbody tr td,
+table.vertical-table tbody tr th,
+table.vertical-table tbody tr:first-child td,
+table.vertical-table tbody tr:first-child th {
+	border-color: #2F343D;
+}
+
+table.vertical-table tbody tr th {
+	background-color: #515763;
+}
+
+table.vertical-table tbody tr td {
+	background-color: #434953;
+}
+
+/* 테이블 - 스크롤 테이블 */
+.dataTables_scroll {
+	border-top-color: #7C8596;
+	border-bottom-color: #2F343D;
+}
+
+.dataTables_scroll .dataTables_scrollHead {
+	background-color: #515763;
+}
+
+.dataTables_scroll .dataTables_scrollBody {
+	background-color: #434953 !important;
+}
+
+/* 테이블 - 배치 테이블 (selected) */
+table.arrange-table tbody tr.selected {
+	background-color: #434953 !important;
+}
+
+table.arrange-table tbody tr.selected:hover {
+	background-color: #2E7CFF !important;
+}
+
+/* 테이블 - 배치 테이블 (체크박스 - Unchecked) */
+table.arrange-table thead tr th.selecteAll>span:before,
+table.arrange-table tbody tr td.select-checkbox:before {
+	border-color: #D6D8DD;
+	background-color: #D6D8DD;
+}
+
+/* 테이블 - 배치 테이블 (체크박스 - Checked) */
+table.arrange-table thead tr th.selecteAll.checked>span:before,
+table.arrange-table tbody tr.selected td.select-checkbox:before {
+	border-color: #006DF1;
+	background-color: #006DF1;
+}
+
+table.arrange-table thead tr th.selecteAll.checked>span:after,
+table.arrange-table tbody tr.selected td.select-checkbox:after {
+	color: #D6D8DD;
+}
+
+/* 테이블 - 배치 테이블 (체크박스 - Disabled) */
+table.arrange-table tbody tr.selected.isAdmin td.select-checkbox:before {
+	border-color: #EFEFEF;
+	background-color: #EFEFEF;
+}
+
+table.arrange-table tbody tr.selected.isAdmin td.select-checkbox:after {
+	color: #787C82;
+}
+
+/* 테이블 - 포스트 이동 테이블 */
+table.postMove-table tbody tr th,
+table.postMove-table tbody tr td {
+	border-color: #2F343D;
+}
+
+table.postMove-table tbody tr th {
+	background-color: #515763;
+}
+
+table.postMove-table tbody tr td {
+	background-color: #434953;
+}
+
+table.postMove-table tbody tr th i {
+	color: #9D9FA4;
+}
+
+/* ---------------------------------------------
+ * # 로딩
+ * --------------------------------------------- */
+.loading-background {
+	background-color: #2F343D;
+}
+
+.loading-background .spinner-border {
+	color: #006DF1;
+}
+
+/* 로딩 - 카드 로딩 */
+.card .card-loading {
+	background-color: #434953;
+}
+
+/* ---------------------------------------------
+ * # 스크롤
+ * --------------------------------------------- */
+::-webkit-scrollbar-thumb {
+	background-color: #B5B9C3;
+}
+
+/* ---------------------------------------------
+ * # 툴팁
+ * --------------------------------------------- */
+
+/* 툴팁 - 부트스트랩 툴팁 */
+.tooltip-inner {
+	border-color: #2F343D;
+	background-color: #EFEFEF;
+	color: #282828;
+}
+
+.bs-tooltip-bottom .arrow::before {
+	border-bottom-color: #2F343D;
+}
+
+.bs-tooltip-bottom .arrow::after {
+	border-bottom-color: #EFEFEF;
+}
+
+/* 툴팁 - 카드 툴팁  */
+.card.card-tooltip {
+	color: #EFEFEF;
+}
+
+/* ---------------------------------------------
+ * # 탭
+ * --------------------------------------------- */
+.scroll-tab.scroll_tabs_container div.scroll_tab_inner li {
+	color: #9D9FA4;
+}
+
+.scroll-tab.scroll_tabs_container div.scroll_tab_inner li.tab_selected {
+	border-color: #57D7FF;
+	color: #57D7FF;
+}
+
+.scroll-tab.scroll_tabs_container .scroll_tab_left_button,
+.scroll-tab.scroll_tabs_container .scroll_tab_right_button {
+	color: #57D7FF;
+}
+
+.scroll-tab.scroll_tabs_container .scroll_tab_left_button_disabled,
+.scroll-tab.scroll_tabs_container .scroll_tab_right_button_disabled {
+	color: #9D9FA4;
+}
+
+/* ------------------------------------
+ * # 대시보드
+ * ------------------------------------ */
+.integrateWidgetTitle {
+	background-color: #3C414D;
+}
+
+#integrateWidgetContainer {
+	border-color: #3C414D;
+}
+
+/* 대시보드 - 위젯 1 */
+.widget001 b {
+	color: #57D7FF;
+}
+
+.widget001>.row>div[class*=col-]:first-child,
+.widget001>.row>div[class*=col-]>.row:first-child,
+.widget001>.row>div[class*=col-]>.row>div[class*=col-]:first-child {
+	border-color: #2F343D;
+}
+
+/* 대시보드 - 위젯 2 */
+.widget002 ul li>:nth-child(1) {
+	color: #9D9FA4;
+}
+
+.widget002 ul li>:nth-child(2) {
+	border-color: #2F343D;
+}
+
+.widget002 ul li>:nth-child(3) {
+	color: #EFEFEF;
+}
+
+/* 대시보드 - 위젯 3 */
+.widget003>.row>div[class*=col-]:not(:last-child) {
+	border-right: 1px solid #2F343D;
+}
+
+.widget003>.row>div[class*=col-] span {
+	color: #9D9FA4;
+}
+
+.widget003>.row>div[class*=col-] div {
+	color: #EFEFEF;
+}
+
+/* ------------------------------------
+ * # 리스트
+ * ------------------------------------ */
+.list-group .list-group-item {
+	border-color: #2F343D;
+}
+
+.list-group .list-group-item>.row-padding-0>div[class*=col-]:first-child {
+	background-color: #515763;
+}
+
+.list-group .list-group-item>.row-padding-0>div[class*=col-]:last-child {
+	background-color: #434953;
+}
+
+/* ------------------------------------
+ * # 프로그레스바
+ * ------------------------------------ */
+.progress {
+	background-color: #616977;
+}
+
+.progress-bar.bg-danger {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), #F53253;
+}
+
+.progress-bar.bg-yellow {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), #EA9E0B;
+}
+
+.progress-bar.bg-green {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), #2DAC18;
+}
+
+/* ------------------------------------
+ * # 텍스트 에디터
+ * ------------------------------------ */
+
+/* 툴바 - 모달 */
+.note-modal-content {
+	background-color: #2F343D;
+	color: #EFEFEF;
+}
+
+.note-modal-content .note-modal-header {
+	background-color: #006DF1;
+}
+
+.note-modal-content .note-modal-header .note-modal-title,
+.note-modal-content .note-modal-header button.close {
+	color: #EFEFEF;
+}
+
+.note-modal-content .note-modal-body label {
+	color: #EFEFEF;
+}
+
+.note-modal-content .note-modal-body input:not(.form-control).note-input {
+	border-color: #2F343D;
+	color: #EFEFEF;
+}
+
+.note-modal-content .note-modal-footer {
+	border-color: #434953;
+}
+
+.note-modal-content .note-modal-footer input.btn {
+	border-color: #006DF1;
+	background-color: #006DF1;
+	color: #EFEFEF;
+}
+
+.note-modal-content .note-modal-footer input.btn.disabled,
+.note-modal-content .note-modal-footer input.btn:disabled {
+	border-color: #434953;
+	background-color: #434953;
+	color: #535961;
+}

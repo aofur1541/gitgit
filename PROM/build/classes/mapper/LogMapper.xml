@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdis.PROM.log.dao.LogDAO">
+
+	<select id="selectUserConnectLogList" resultType="LogVO">
+		select
+			no_nAlertNum nAlertNum,
+			no_sReceive sReceive,
+			u.sName name,
+			no_nCategory nCategory,
+			no_sKeyword sKeyword,
+			no_sContext sContext,
+			date_format(no_sSendDay, '%Y-%m-%d %H:%i:%s') sSendDay,
+			no_sTarget sTarget 
+		from notification n
+		left join sdsc_user u 
+			on u.sUserID = n.no_sReceive
+		where u.nApproval = 1
+		and (n.no_sKeyword = 'Login' or n.no_sKeyword = 'Logout')
+		order by n.no_nAlertNum desc
+	</select>
+	
+	<select id="selectAdminConnectLogList" resultType="LogVO">
+		select
+			no_nAlertNum nAlertNum,
+			no_sReceive sReceive,
+			u.sName name,
+			no_nCategory nCategory,
+			no_sKeyword sKeyword,
+			no_sContext sContext,
+			date_format(no_sSendDay, '%Y-%m-%d %H:%i:%s') sSendDay,
+			no_sTarget sTarget 
+		from notification n
+		left join sdsc_user u 
+			on u.sUserID = n.no_sReceive
+		where u.nApproval != 1
+		and (n.no_sKeyword = 'Login' or n.no_sKeyword = 'Logout')
+		order by n.no_nAlertNum desc
+	</select>
+	
+	<select id="selectUserWorkLogList" resultType="LogVO">
+		select
+			no_nAlertNum nAlertNum,
+			no_sReceive sReceive,
+			u.sName name,
+			no_nCategory nCategory,
+			no_sKeyword sKeyword,
+			no_sContext sContext,
+			date_format(no_sSendDay, '%Y-%m-%d %H:%i:%s') sSendDay,
+			no_sTarget sTarget 
+		from notification n
+		left join sdsc_user u 
+			on u.sUserID = n.no_sReceive
+		where u.nApproval = 1
+		and (n.no_sKeyword != 'Login' and n.no_sKeyword != 'Logout'
+			and n.no_sKeyword != 'Approval' and n.no_sKeyword != 'Request'
+			and n.no_sKeyword != 'Return' and n.no_sKeyword != 'Hold')
+		order by n.no_nAlertNum desc
+	</select>
+	
+	<select id="selectAdminWorkLogList" resultType="LogVO">
+		select
+			no_nAlertNum nAlertNum,
+			no_sReceive sReceive,
+			u.sName name,
+			no_nCategory nCategory,
+			no_sKeyword sKeyword,
+			no_sContext sContext,
+			date_format(no_sSendDay, '%Y-%m-%d %H:%i:%s') sSendDay,
+			no_sTarget sTarget 
+		from notification n
+		left join sdsc_user u 
+			on u.sUserID = n.no_sReceive
+		where u.nApproval != 1
+		and (n.no_sKeyword != 'Login' and n.no_sKeyword != 'Logout'
+			and n.no_sKeyword != 'Approval' and n.no_sKeyword != 'Request'
+			and n.no_sKeyword != 'Return' and n.no_sKeyword != 'Hold')
+		order by n.no_nAlertNum desc
+	</select>
+	
+	<select id="selectApproveLogList" resultType="LogVO">
+		select
+			no_nAlertNum nAlertNum,
+			no_sReceive sReceive,
+			u.sName name,
+			no_nCategory nCategory,
+			no_sKeyword sKeyword,
+			no_sContext sContext,
+			date_format(no_sSendDay, '%Y-%m-%d %H:%i:%s') sSendDay,
+			no_sTarget sTarget 
+		from notification n
+		left join sdsc_user u 
+			on u.sUserID = n.no_sReceive
+		where (n.no_sKeyword = 'Approval' or n.no_sKeyword = 'Request'
+			or n.no_sKeyword = 'Return' or n.no_sKeyword = 'Hold')
+		order by n.no_nAlertNum desc
+	</select>
+	
+	<select id="selectApproveLogListByUserId" resultType="LogVO">
+		select
+			no_nAlertNum nAlertNum,
+			no_sReceive sReceive,
+			u.sName name,
+			no_nCategory nCategory,
+			no_sKeyword sKeyword,
+			no_sContext sContext,
+			date_format(no_sSendDay, '%Y-%m-%d %H:%i:%s') sSendDay,
+			no_sTarget sTarget 
+		from notification n
+			join (
+				select s.sUserID, s.sName
+				from sdsc_user s, user_tenant_mapping m
+			where s.id = m.user_id
+				and m.tenant_id in (select tenant_id from user_tenant_mapping where user_id = #{userId})
+			) u on u.sUserID = n.no_sReceive
+		where (n.no_sKeyword = 'Approval' or n.no_sKeyword = 'Request'
+			or n.no_sKeyword = 'Return' or n.no_sKeyword = 'Hold')
+		order by n.no_nAlertNum desc
+	</select>
+
+	<insert id="insertLog" parameterType="LogVO">
+		insert into notification (
+			no_nAlertNum,
+			no_sReceive,
+			no_nCategory,
+			no_sKeyword,
+			no_sContext,
+			no_sSendDay,
+			no_sTarget)
+		select 
+			ifnull(max(no_nAlertNum),0)+1,
+			#{sReceive},
+			#{nCategory},
+			#{sKeyword},
+			#{sContext},
+			now(),
+			#{sTarget}
+		from notification
+	</insert>
+	
+	<select id="selectVMLogList" parameterType="VMGeneratingVO" resultType="VMGeneratingVO">
+		select 
+			g.nNumber,
+			g.vm_name vmName,
+			g.distinction,
+			g.createStatus,
+			g.finishStatus,
+			date_format(dStartTime, '%Y-%m-%d %H:%i:%s') dStartTime,
+			date_format(dEndTime, '%Y-%m-%d %H:%i:%s') dEndTime,
+			g.sErrorCode,
+			g.errorCheck,
+			c.clusterName,
+			h.vm_Hhostname hostName,
+			t.name tenantName,
+			s.vm_service_name serviceName
+		from vmGenerating g
+			left join vm_data_info d on d.vm_name = g.vm_name
+			left join vm_host_info h on h.vm_Hhostname = d.vm_host
+			left join clusterInfo c on c.clusterName = h.hostParent
+		<if test='isUserTenantMapping == null or isUserTenantMapping == "" or isUserTenantMapping == "false"'>	
+			left join vm_service s on d.vm_service_ID = s.vm_service_ID
+			left join tenants t on s.tenants_id = t.id
+		where 1 = 1
+		</if>
+		<if test='isUserTenantMapping == "true"'>	
+			join vm_service s on d.vm_service_ID = s.vm_service_ID
+			join tenants t on s.tenants_id = t.id
+			join user_tenant_mapping m on m.tenant_id = t.id
+		where m.user_id = #{userId}
+		</if>	
+		<if test='tenantId == -1 or serviceId == -1'>
+			<!-- 미배치 -->
+			and (d.vm_service_ID = 0 or d.vm_service_ID is null) and (s.tenants_id = 0 or s.tenants_id is null)
+		</if>	
+		<if test='clusterId == null and tenantId == null'>
+			<!-- 테넌트 전체 -->
+			and s.tenants_id is not null and s.tenants_id != 0
+		</if>
+		<if test='tenantId != null and tenantId != -1'>
+			<!-- 테넌트 선택 -->
+			and s.tenants_id = #{tenantId}
+		</if>	
+		<if test='clusterId == null and tenantId != -1 and serviceId == null'>
+			<!-- 서비스 전체 -->
+			and d.vm_service_ID is not null and d.vm_service_ID != 0
+		</if>	
+		<if test='tenantId != -1 and serviceId != null and serviceId != -1'>
+			<!-- 서비스 선택 -->
+			and d.vm_service_ID = #{serviceId}
+		</if>
+		<if test='clusterId != null and clusterId != "clusterAll"'>
+			and c.clusterId = #{clusterId}
+		</if>
+		<if test='hostId != null and hostId != "hostAll"'>
+			and h.vm_HID = #{hostId}
+		</if>
+		<if test='distinction == "1"'>
+			and (distinction = 1 or distinction = 3)
+		</if>
+		<if test='distinction == "2"'>
+			and distinction = #{distinction} 
+		</if>
+		order by finishStatus is null desc, nNumber desc
+	</select>
+
+	<update id="updateVMLogErrorCheckConfirm">
+		update vmGenerating
+			set errorCheck = 1 
+		where finishStatus in (2,3)
+	</update>
+	
+	<select id="countProgressVMLog" resultType="VMGeneratingVO">
+		select
+			(select count(nNumber) from vmGenerating where finishStatus = 0 and distinction = 1) creatingCnt,
+			(select count(nNumber) from vmGenerating where finishStatus = 0 and distinction = 2) updatingCnt
+		from dual
+	</select>
+	
+	<select id="countErrorVMLog" resultType="Integer">
+		select ifnull(count(*), 0)
+		from vmGenerating 
+		where finishStatus in (2,3) 
+		and errorCheck = 0
+	</select>
+	
+	<update id="updateVMLogNoProgress">
+		update vmGenerating 
+		set 
+			createStatus = '워크플로우 실행중 비정상 종료',
+			finishStatus = 3,
+			errorCheck = 1 
+		where nNumber in
+			(
+				select nNumber from (
+					select nNumber from vmGenerating
+					where finishStatus = 0 and date_add(dStartTime, interval 15 minute) <![CDATA[<]]> now()
+				) n
+			)
+	</update>
+
+	<select id="selectVCenterLogList" resultType="VCenterAlertVO">
+		select
+			vc_alert_PK vcAlertPK,
+			sTarget,
+			sVc_Message sVcMessage,
+			date_format(dAlert_time, '%Y-%m-%d %H:%i:%s') dAlertTime,
+			nAlert_check nAlertCheck,
+			sAlert_color sAlertColor
+		from vc_alert 
+		order by field(sAlert_color,'red') desc, dAlert_time desc
+	</select>
+	
+	<select id="countTodayVCenterLog" resultType="int">
+		select 
+			count(vc_alert_PK)  
+		from vc_alert 
+		where dAlert_time > CURRENT_DATE() 
+		and nAlert_check = 0 
+	</select>
+	
+	<update id="updateVCenterAlertConfirm">
+		update vc_alert 
+		set 
+			nAlert_check = 1 
+		where vc_alert_PK = #{vcAlertPK}
+	</update>
+	
+	<update id="updateVCenterAlertAllReset">
+		update vc_alert 
+		set nAlert_check = 0
+	</update>
+	
+</mapper>
